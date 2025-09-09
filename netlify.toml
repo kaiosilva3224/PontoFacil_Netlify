@@ -1,6 +1,7 @@
 [build]
   publish = "."
 
+# Redirects para subdomínios específicos
 [[redirects]]
   from = "https://admin.pontofacil.app.br/*"
   to = "/admin.html"
@@ -19,6 +20,7 @@
   status = 200
   force = true
 
+# Redirects para domínio principal
 [[redirects]]
   from = "https://www.pontofacil.app.br/*"
   to = "/index.html"
@@ -31,3 +33,24 @@
   status = 200
   force = true
 
+# Fallback para URLs diretas no domínio Netlify
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/empresa"
+  to = "/empresa.html"
+  status = 200
+
+[[redirects]]
+  from = "/ponto"
+  to = "/ponto.html"
+  status = 200
+
+# SPA fallback (deve ser o último)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

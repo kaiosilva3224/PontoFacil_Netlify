@@ -1,0 +1,33 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "https://admin.pontofacil.app.br/*"
+  to = "/admin.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://app.pontofacil.app.br/*"
+  to = "/empresa.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://ponto.pontofacil.app.br/*"
+  to = "/ponto.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.pontofacil.app.br/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://pontofacil.app.br/*"
+  to = "/index.html"
+  status = 200
+  force = true
+

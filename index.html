@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Fácil - Controle de Ponto Empresarial</title>
+    <style>
+        /* Variáveis CSS */
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #10B981;
+            --text-color: #333;
+            --bg-color: #f4f7f6;
+            --card-bg: #fff;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout Geral */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cabeçalho */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #6a5acd);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        header .hero {
+            padding: 50px 20px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Navegação */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 20px;
+        }
+
+        nav .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Botões */
+        .btn-primary, .btn-secondary {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0e9f6e;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Seções */
+        section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        section h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        /* Seção de Funcionalidades */
+        .features .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .features .feature-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .features .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .features .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        /* Seção de Preços */
+        .pricing {
+            background-color: #eef2f1;
+        }
+
+        .pricing .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing .price-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .pricing .price-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.03);
+        }
+
+        .pricing .price-card h3 {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .pricing .price-card .price {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .pricing .price-card .price span {
+            font-size: 0.5em;
+            font-weight: normal;
+            color: var(--text-color);
+        }
+
+        .pricing .price-card ul {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing .price-card ul li {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        /* Seção de Contato */
+        .contact form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact form input, .contact form textarea {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            width: 100%;
+        }
+
+        .contact form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9em;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            nav {
+                flex-direction: column;
+                padding-top: 20px;
+            }
+
+            nav ul {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 5px 10px;
+            }
+
+            .features .feature-grid, .pricing .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing .price-card.featured {
+                transform: scale(1.02);
+            }
+        }
+
+        /* Estilos para o formulário de login/registro */
+        .auth-form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 140px); /* Ajuste para o header e footer */
+            background-color: var(--bg-color);
+        }
+
+        .auth-form {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-form h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .auth-form input {
+            margin-bottom: 15px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            width: calc(100% - 24px);
+            font-size: 1em;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-form button:hover {
+            background-color: #3b33b0;
+        }
+
+        .auth-form .toggle-form {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .auth-form .toggle-form a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🕐 Ponto Fácil</div>
+            <ul>
+                <li><a href="#funcionalidades">Funcionalidades</a></li>
+                <li><a href="#precos">Preços</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="#auth">Login</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <h1>Controle de Ponto Descomplicado para sua Empresa</h1>
+            <p>O Ponto Fácil é a solução ideal para gerenciar a jornada de trabalho dos seus funcionários de forma eficiente e segura.</p>
+            <a href="#precos" class="btn-primary">Comece Agora</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="funcionalidades" class="features">
+            <h2>Funcionalidades que Transformam</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Registro de Ponto Inteligente</h3>
+                    <p>Marque o ponto de forma rápida e segura, com reconhecimento facial e geolocalização.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Gestão de Equipes</h3>
+                    <p>Gerencie funcionários, departamentos e horários de trabalho com facilidade.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Relatórios Detalhados</h3>
+                    <p>Tenha acesso a relatórios completos de frequência, horas extras e banco de horas.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Acessibilidade Mobile</h3>
+                    <p>Acompanhe tudo pelo seu celular, a qualquer hora e em qualquer lugar.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="precos" class="pricing">
+            <h2>Planos Flexíveis para o seu Negócio</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>Básico</h3>
+                    <p class="price">R$ 15<span>/mês</span></p>
+                    <ul>
+                        <li>Até 10 funcionários</li>
+                        <li>Registro de ponto</li>
+                        <li>Relatórios básicos</li>
+                    </ul>
+                    <button class="btn-secondary">Escolher Plano</button>
+                </div>
+                <div class="price-card featured">
+                    <h3>Profissional</h3>
+                    <p class="price">R$ 35<span>/mês</span></p>
+                    <ul>
+                        <li>Até 50 funcionários</li>
+                        <li>Registro de ponto avançado</li>
+                        <li>Relatórios detalhados</li>
+                        <li>Gestão de equipes</li>
+                    </ul>
+                    <button class="btn-primary">Escolher Plano</button>
+                </div>
+                <div class="price-card">
+                    <h3>Empresarial</h3>
+                    <p class="price">R$ 65<span>/mês</span></p>
+                    <ul>
+                        <li>Funcionários ilimitados</li>
+                        <li>Todas as funcionalidades</li>
+                        <li>Suporte prioritário</li>
+                        <li>Integrações personalizadas</li>
+                    </ul>
+                    <button class="btn-secondary">Escolher Plano</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="contact">
+            <h2>Fale Conosco</h2>
+            <p>Tem alguma dúvida ou quer saber mais sobre o Ponto Fácil? Entre em contato!</p>
+            <form>
+                <input type="text" placeholder="Seu Nome">
+                <input type="email" placeholder="Seu Email">
+                <textarea placeholder="Sua Mensagem"></textarea>
+                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+            </form>
+        </section>
+
+        <section id="auth" class="auth-form-container">
+            <div class="auth-form">
+                <h2 id="auth-title">Login</h2>
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Senha">
+                <button id="auth-button">Entrar</button>
+                <p class="toggle-form">
+                    Não tem uma conta? <a href="#" id="toggle-register">Registre-se</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Ponto Fácil. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAuGRbcAkCTRJFQ_3_g8VvX2kuLdSFEQg",
+          authDomain: "pontofacil-f4766.firebaseapp.com",
+          projectId: "pontofacil-f4766",
+          storageBucket: "pontofacil-f4766.appspot.com",
+          messagingSenderId: "160973674012",
+          appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+          measurementId: "G-Z5NGQVXY2V"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+
+        const authTitle = document.getElementById('auth-title');
+        const authEmail = document.getElementById('auth-email');
+        const authPassword = document.getElementById('auth-password');
+        const authButton = document.getElementById('auth-button');
+        const toggleRegister = document.getElementById('toggle-register');
+
+        let isRegistering = false;
+
+        toggleRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            isRegistering = !isRegistering;
+            if (isRegistering) {
+                authTitle.textContent = 'Registrar';
+                authButton.textContent = 'Registrar';
+                toggleRegister.textContent = 'Já tem uma conta? Faça login';
+            } else {
+                authTitle.textContent = 'Login';
+                authButton.textContent = 'Entrar';
+                toggleRegister.textContent = 'Não tem uma conta? Registre-se';
+            }
+        });
+
+        authButton.addEventListener('click', () => {
+            const email = authEmail.value;
+            const password = authPassword.value;
+
+            if (isRegistering) {
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Signed in 
+                        const user = userCredential.user;
+                        console.log('Usuário registrado:', user);
+                        alert('Usuário registrado com sucesso! Faça login.');
+                        // Redirecionar para a página de ponto após o registro
+                        window.location.href = '/ponto.html';
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Erro ao registrar:', errorCode, errorMessage);
+                        alert('Erro ao registrar: ' + errorMessage);
+                    });
+            } else {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Signed in
+                        const user = userCredential.user;
+                        console.log('Usuário logado:', user);
+                        alert('Login realizado com sucesso!');
+                        // Redirecionar para a página de ponto após o login
+                        window.location.href = '/ponto.html';
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Erro ao fazer login:', errorCode, errorMessage);
+                        alert('Erro ao fazer login: ' + errorMessage);
+                    });
+            }
+        });
+
+        // Redirecionamento baseado no status de autenticação
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Usuário está logado
+                const currentPath = window.location.pathname;
+                const hostname = window.location.hostname;
+
+                if (hostname.includes('admin')) {
+                    if (currentPath !== '/admin.html') {
+                        window.location.href = '/admin.html';
+                    }
+                } else if (hostname.includes('app')) {
+                    if (currentPath !== '/empresa.html') {
+                        window.location.href = '/empresa.html';
+                    }
+                } else if (hostname.includes('ponto')) {
+                    if (currentPath !== '/ponto.html') {
+                        window.location.href = '/ponto.html';
+                    }
+                } else if (currentPath === '/' || currentPath === '/index.html') {
+                    // Se estiver na página principal e logado, redireciona para ponto.html
+                    window.location.href = '/ponto.html';
+                }
+            } else {
+                // Usuário não está logado
+                const currentPath = window.location.pathname;
+                const hostname = window.location.hostname;
+
+                if (hostname.includes('admin') || hostname.includes('app') || hostname.includes('ponto')) {
+                    // Se tentar acessar um subdomínio protegido sem estar logado, redireciona para a página principal
+                    if (currentPath !== '/' && currentPath !== '/index.html') {
+                        window.location.href = '/';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

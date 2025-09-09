@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Fácil - Painel Master Admin</title>
+    <style>
+        /* Variáveis CSS */
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #10B981;
+            --text-color: #333;
+            --bg-color: #f4f7f6;
+            --card-bg: #fff;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout Geral */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cabeçalho */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #6a5acd);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        header .hero {
+            padding: 50px 20px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Navegação */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 20px;
+        }
+
+        nav .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Botões */
+        .btn-primary, .btn-secondary {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0e9f6e;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Seções */
+        section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        section h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        /* Seção de Funcionalidades */
+        .features .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .features .feature-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .features .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .features .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        /* Seção de Preços */
+        .pricing {
+            background-color: #eef2f1;
+        }
+
+        .pricing .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing .price-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .pricing .price-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.03);
+        }
+
+        .pricing .price-card h3 {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .pricing .price-card .price {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .pricing .price-card .price span {
+            font-size: 0.5em;
+            font-weight: normal;
+            color: var(--text-color);
+        }
+
+        .pricing .price-card ul {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing .price-card ul li {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        /* Seção de Contato */
+        .contact form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact form input, .contact form textarea {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            width: 100%;
+        }
+
+        .contact form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9em;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            nav {
+                flex-direction: column;
+                padding-top: 20px;
+            }
+
+            nav ul {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 5px 10px;
+            }
+
+            .features .feature-grid, .pricing .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing .price-card.featured {
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🕐 Ponto Fácil - Admin</div>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#empresas">Empresas</a></li>
+                <li><a href="#relatorios">Relatórios</a></li>
+                <li><a href="#" id="logout-button">Sair</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <h1>Bem-vindo ao Painel Master Admin</h1>
+            <p>Gerencie todas as empresas clientes do Ponto Fácil em um só lugar.</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="dashboard" class="features">
+            <h2>Dashboard Administrativo</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Empresas Cadastradas</h3>
+                    <p>Visualize e gerencie todas as empresas.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Planos e Pagamentos</h3>
+                    <p>Controle os planos e pagamentos de cada cliente.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Relatórios Consolidados</h3>
+                    <p>Acesse relatórios gerais do sistema.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="empresas" class="pricing">
+            <h2>Gestão de Empresas</h2>
+            <p>Aqui você pode cadastrar, editar e visualizar as empresas clientes.</p>
+            <!-- Conteúdo de gestão de empresas -->
+        </section>
+
+        <section id="relatorios" class="contact">
+            <h2>Relatórios do Sistema</h2>
+            <p>Acompanhe o desempenho geral do Ponto Fácil.</p>
+            <!-- Conteúdo de relatórios -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Ponto Fácil. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAuGRbcAkCTRJFQ_3_g8VvX2kuLdSFEQg",
+          authDomain: "pontofacil-f4766.firebaseapp.com",
+          projectId: "pontofacil-f4766",
+          storageBucket: "pontofacil-f4766.appspot.com",
+          messagingSenderId: "160973674012",
+          appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+          measurementId: "G-Z5NGQVXY2V"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const logoutButton = document.getElementById('logout-button');
+
+        // Check authentication state on page load
+        auth.onAuthStateChanged((user) => {
+            const hostname = window.location.hostname;
+            if (!user) {
+                // User is not signed in, redirect to login page
+                if (hostname.includes('admin')) {
+                    window.location.href = '/'; // Redireciona para a raiz do domínio principal
+                } else {
+                    window.location.href = '/';
+                }
+            } else {
+                // User is signed in, ensure they are on the correct page for the subdomain
+                if (!hostname.includes('admin')) {
+                    // If logged in but not on admin subdomain, redirect to admin page
+                    window.location.href = 'http://admin.pontofacil.app.br';
+                }
+            }
+        });
+
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                // Sign-out successful.
+                window.location.href = '/';
+            }).catch((error) => {
+                // An error happened.
+                console.error('Erro ao fazer logout:', error);
+                alert('Erro ao fazer logout. Tente novamente.');
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Fácil - Sistema de Ponto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .greeting h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .clock-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .clock-icon {
+            font-size: 2.5em;
+            color: #4F46E5;
+            margin-bottom: 15px;
+        }
+
+        .clock-time {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .clock-date {
+            color: #666;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 8px 0;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .status-check {
+            color: #10B981;
+            font-size: 1.2em;
+        }
+
+        .status-pending {
+            color: #999;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ponto-btn {
+            background: #6B7280;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-height: 80px;
+            justify-content: center;
+        }
+
+        .ponto-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .ponto-btn.chegada {
+            background: #6B7280;
+        }
+
+        .ponto-btn.almoco {
+            background: #6B7280;
+        }
+
+        .ponto-btn.saida {
+            background: #EF4444;
+        }
+
+        .ponto-btn.saida:hover {
+            background: #DC2626;
+        }
+
+        .ponto-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-icon {
+            font-size: 1.5em;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-line {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .info-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-highlight {
+            font-weight: 600;
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .clock-time {
+                font-size: 2.2em;
+            }
+            
+            .buttons-grid {
+                gap: 10px;
+            }
+            
+            .ponto-btn {
+                padding: 15px;
+                min-height: 70px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="greeting">
+                <h1>Olá, <span id="userName">Funcionário</span>!</h1>
+                <p>Painel do Funcionário</p>
+            </div>
+            <button class="menu-btn" id="logout-button">Sair</button>
+        </div>
+
+        <!-- Relógio -->
+        <div class="clock-card">
+            <div class="clock-icon">🕐</div>
+            <div class="clock-time" id="clockTime">14:26:55</div>
+            <div class="clock-date">
+                <span>📅</span>
+                <span id="clockDate">segunda-feira, 8 de setembro de 2025</span>
+            </div>
+        </div>
+
+        <!-- Status do Dia -->
+        <div class="status-card">
+            <div class="status-title">Status do Dia</div>
+            
+            <div class="status-item">
+                <span class="status-label">Chegada:</span>
+                <div class="status-time">
+                    <span id="chegadaTime" class="status-pending">--:--</span>
+                    <span id="chegadaCheck" class="status-check" style="display: none;">✓</span>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <span class="status-label">Início Almoço:</span>
+                <div class="status-time">
+                    <span id="inicioAlmocoTime" class="status-pending">--:--</span>
+                    <span id="inicioAlmocoCheck" class="status-check" style="display: none;">✓</span>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <span class="status-label">Fim Almoço:</span>
+                <div class="status-time">
+                    <span id="fimAlmocoTime" class="status-pending">--:--</span>
+                    <span id="fimAlmocoCheck" class="status-check" style="display: none;">✓</span>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <span class="status-label">Saída:</span>
+                <div class="status-time">
+                    <span id="saidaTime" class="status-pending">--:--</span>
+                    <span id="saidaCheck" class="status-check" style="display: none;">✓</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="buttons-grid">
+            <button class="ponto-btn chegada" id="btnChegada" onclick="marcarPonto('chegada')">
+                <span class="btn-icon">🏠</span>
+                <span>Marcar Chegada</span>
+            </button>
+
+            <button class="ponto-btn almoco" id="btnInicioAlmoco" onclick="marcarPonto('inicioAlmoco')">
+                <span class="btn-icon">🍽️</span>
+                <span>Início Almoço</span>
+            </button>
+
+            <button class="ponto-btn almoco" id="btnFimAlmoco" onclick="marcarPonto('fimAlmoco')" disabled>
+                <span class="btn-icon">🍽️</span>
+                <span>Fim Almoço</span>
+            </button>
+
+            <button class="ponto-btn saida" id="btnSaida" onclick="marcarPonto('saida')" disabled>
+                <span class="btn-icon">🚪</span>
+                <span>Marcar Saída</span>
+            </button>
+        </div>
+
+        <!-- Informações -->
+        <div class="info-card">
+            <div class="info-line">
+                <span class="info-highlight">Horário padrão:</span> 08:00 às 17:00
+            </div>
+            <div class="info-line">
+                <span class="info-highlight">Almoço:</span> 12:00 às 13:00 (máx. 1h)
+            </div>
+            <div class="info-line">
+                Atrasos são calculados automaticamente
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAuGRbcAkCTRJFQ_3_g8VvX2kuLdSFEQg",
+          authDomain: "pontofacil-f4766.firebaseapp.com",
+          projectId: "pontofacil-f4766",
+          storageBucket: "pontofacil-f4766.appspot.com",
+          messagingSenderId: "160973674012",
+          appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+          measurementId: "G-Z5NGQVXY2V"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const auth = firebase.auth();
+        const logoutButton = document.getElementById('logout-button');
+
+        // Check authentication state on page load
+        auth.onAuthStateChanged((user) => {
+            const hostname = window.location.hostname;
+            if (!user) {
+                // User is not signed in, redirect to login page
+                if (hostname.includes('ponto')) {
+                    window.location.href = '/'; // Redireciona para a raiz do domínio principal
+                } else {
+                    window.location.href = '/';
+                }
+            } else {
+                // User is signed in, ensure they are on the correct page for the subdomain
+                if (!hostname.includes('ponto')) {
+                    // If logged in but not on ponto subdomain, redirect to ponto page
+                    window.location.href = 'http://ponto.pontofacil.app.br';
+                } else {
+                    // User is signed in and on correct page, display user email
+                    document.getElementById('userName').textContent = user.email;
+                    carregarDados(); // Carrega os dados do Firestore após o login
+                }
+            }
+        });
+
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                // Sign-out successful.
+                window.location.href = '/';
+            }).catch((error) => {
+                // An error happened.
+                console.error('Erro ao fazer logout:', error);
+                alert('Erro ao fazer logout. Tente novamente.');
+            });
+        });
+
+        // Estado dos pontos
+        let pontos = {
+            chegada: null,
+            inicioAlmoco: null,
+            fimAlmoco: null,
+            saida: null
+        };
+
+        // Carregar dados salvos
+        function carregarDados() {
+            const user = auth.currentUser;
+            if (user) {
+                const userDocRef = db.collection("pontos").doc(user.uid);
+                userDocRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const hoje = new Date().toDateString();
+                        if (data.data === hoje) {
+                            pontos = data;
+                        } else {
+                            // Se a data for diferente, limpa os pontos para o novo dia
+                            pontos = {
+                                chegada: null,
+                                inicioAlmoco: null,
+                                fimAlmoco: null,
+                                saida: null
+                            };
+                            // Opcional: remover o documento antigo do Firestore se quiser um histórico limpo por dia
+                            // userDocRef.delete().then(() => console.log("Documento antigo removido."));
+                        }
+                        atualizarInterface();
+                    } else {
+                        console.log("Nenhum ponto encontrado para este usuário.");
+                        atualizarInterface(); // Atualiza a interface mesmo sem dados
+                    }
+                }).catch((error) => {
+                    console.error("Erro ao carregar pontos do Firestore:", error);
+                });
+            } else {
+                console.log("Usuário não autenticado. Não é possível carregar pontos do Firestore.");
+            }
+        }
+
+        // Salvar dados (não mais necessário, pois o Firestore lida com a persistência)
+        function salvarDados() {
+            // Esta função agora está vazia, pois os dados são salvos diretamente no Firestore
+        }
+
+        // Atualizar relógio
+        function atualizarRelogio() {
+            const agora = new Date();
+            
+            const horas = agora.getHours().toString().padStart(2, '0');
+            const minutos = agora.getMinutes().toString().padStart(2, '0');
+            const segundos = agora.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('clockTime').textContent = `${horas}:${minutos}:${segundos}`;
+            
+            const opcoes = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            const dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
+            document.getElementById('clockDate').textContent = dataFormatada;
+        }
+
+        // Marcar ponto
+        function marcarPonto(tipo) {
+            const agora = new Date();
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            pontos[tipo] = horaFormatada;
+            
+            const user = auth.currentUser;
+            if (user) {
+                const userDocRef = db.collection("pontos").doc(user.uid);
+                userDocRef.set({
+                    ...pontos, // Salva todos os pontos atuais
+                    data: new Date().toDateString() // Salva a data para verificar o dia
+                }, { merge: true })
+                .then(() => {
+                    console.log("Ponto salvo no Firestore!");
+                    atualizarInterface();
+                })
+                .catch((error) => {
+                    console.error("Erro ao salvar ponto no Firestore:", error);
+                    alert("Erro ao salvar ponto. Tente novamente.");
+                });
+            } else {
+                alert("Usuário não autenticado. Faça login para marcar o ponto.");
+            }
+            
+            // Feedback visual
+            const tipoTexto = {
+                'chegada': 'Chegada',
+                'inicioAlmoco': 'Início do Almoço',
+                'fimAlmoco': 'Fim do Almoço',
+                'saida': 'Saída'
+            };
+            
+            alert(`${tipoTexto[tipo]} marcada às ${horaFormatada}`);
+        }
+
+        // Atualizar interface
+        function atualizarInterface() {
+            // Atualizar status
+            Object.keys(pontos).forEach(tipo => {
+                const timeElement = document.getElementById(`${tipo}Time`);
+                const checkElement = document.getElementById(`${tipo}Check`);
+                
+                if (pontos[tipo]) {
+                    timeElement.textContent = pontos[tipo];
+                    timeElement.className = '';
+                    checkElement.style.display = 'inline';
+                } else {
+                    timeElement.textContent = '--:--';
+                    timeElement.className = 'status-pending';
+                    checkElement.style.display = 'none';
+                }
+            });
+
+            // Atualizar botões
+            const btnChegada = document.getElementById('btnChegada');
+            const btnInicioAlmoco = document.getElementById('btnInicioAlmoco');
+            const btnFimAlmoco = document.getElementById('btnFimAlmoco');
+            const btnSaida = document.getElementById('btnSaida');
+
+            if (pontos.chegada) {
+                btnChegada.disabled = true;
+                btnInicioAlmoco.disabled = false;
+            } else {
+                btnChegada.disabled = false;
+                btnInicioAlmoco.disabled = true;
+                btnFimAlmoco.disabled = true;
+                btnSaida.disabled = true;
+            }
+
+            if (pontos.inicioAlmoco) {
+                btnInicioAlmoco.disabled = true;
+                btnFimAlmoco.disabled = false;
+            }
+
+            if (pontos.fimAlmoco) {
+                btnFimAlmoco.disabled = true;
+                btnSaida.disabled = false;
+            }
+
+            if (pontos.saida) {
+                btnSaida.disabled = true;
+            }
+        }
+
+        // Inicializar relógio e carregar dados ao carregar a página
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio(); // Chama imediatamente para evitar atraso inicial
+
+        // Chamado quando o estado de autenticação muda
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('userName').textContent = user.email;
+                carregarDados();
+            } else {
+                // Se o usuário deslogar, limpa a interface
+                pontos = {
+                    chegada: null,
+                    inicioAlmoco: null,
+                    fimAlmoco: null,
+                    saida: null
+                };
+                atualizarInterface();
+                document.getElementById('userName').textContent = 'Funcionário';
+            }
+        });
+
+    </script>
+</body>
+</html>
+

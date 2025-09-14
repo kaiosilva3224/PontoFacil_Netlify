@@ -739,15 +739,16 @@
                 const timeStr = now.toLocaleTimeString('pt-BR');
                 const punchType = todayPunches.length % 2 === 0 ? 'entrada' : 'saida';
                 
+                // Estrutura de dados mais simples - sem campos que causam problemas de índice
                 const punchData = {
                     userId: currentUser.uid,
                     email: currentUser.email,
                     date: dateStr,
                     time: timeStr,
-                    timestamp: firebase.firestore.Timestamp.fromDate(now),
                     type: punchType,
                     location: currentLocation || null,
-                    createdAt: firebase.firestore.Timestamp.fromDate(now)
+                    // Usar apenas um timestamp simples
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
                 console.log('Dados do ponto a serem salvos:', punchData);
@@ -756,8 +757,13 @@
                 const docRef = await db.collection('pontos').add(punchData);
                 console.log('Ponto salvo com ID:', docRef.id);
                 
-                // Adicionar à lista local imediatamente
-                todayPunches.push({ id: docRef.id, ...punchData });
+                // Adicionar à lista local imediatamente para atualizar UI
+                const localPunch = {
+                    id: docRef.id,
+                    ...punchData,
+                    createdAt: { toDate: () => now } // Mock para compatibilidade
+                };
+                todayPunches.push(localPunch);
                 
                 showSuccess(`Ponto registrado com sucesso! (${punchType.charAt(0).toUpperCase() + punchType.slice(1)})`);
                 updateUI();
@@ -785,7 +791,7 @@
             }
         }
 
-        // Carregar registros de hoje
+        // Carregar registros de hoje - VERSÃO COMPLETAMENTE SIMPLIFICADA
         async function loadTodayPunches() {
             if (!currentUser) return;
 
@@ -795,65 +801,38 @@
             }
 
             try {
-                const today = new Date().toISOString().split('T')[0];
-                console.log('Carregando registros para:', currentUser.email, 'data:', today);
+                console.log('Carregando registros para:', currentUser.email);
                 
+                // CONSULTA MAIS SIMPLES POSSÍVEL - apenas por userId
                 const snapshot = await db.collection('pontos')
                     .where('userId', '==', currentUser.uid)
-                    .where('date', '==', today)
                     .get();
 
+                const today = new Date().toISOString().split('T')[0];
                 todayPunches = [];
-                const docs = [];
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    docs.push({ id: doc.id, ...data });
+                    // Filtrar por data localmente
+                    if (data.date === today) {
+                        todayPunches.push({ id: doc.id, ...data });
+                    }
                 });
 
-                // Ordenar localmente por timestamp
-                docs.sort((a, b) => {
-                    const timeA = a.timestamp ? a.timestamp.toDate() : new Date(a.date + ' ' + a.time);
-                    const timeB = b.timestamp ? b.timestamp.toDate() : new Date(b.date + ' ' + b.time);
-                    return timeA - timeB;
+                // Ordenar localmente por time string
+                todayPunches.sort((a, b) => {
+                    // Comparar strings de tempo diretamente
+                    return a.time.localeCompare(b.time);
                 });
 
-                todayPunches = docs;
-                console.log('Total de registros carregados:', todayPunches.length);
+                console.log('Total de registros carregados para hoje:', todayPunches.length);
                 updateUI();
                 
             } catch (error) {
                 console.error('Erro ao carregar registros:', error);
-                
-                // Tentar consulta de fallback
-                try {
-                    const snapshot = await db.collection('pontos')
-                        .where('userId', '==', currentUser.uid)
-                        .get();
-                    
-                    const today = new Date().toISOString().split('T')[0];
-                    todayPunches = [];
-                    
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        if (data.date === today) {
-                            todayPunches.push({ id: doc.id, ...data });
-                        }
-                    });
-                    
-                    todayPunches.sort((a, b) => {
-                        const timeA = a.timestamp ? a.timestamp.toDate() : new Date(a.date + ' ' + a.time);
-                        const timeB = b.timestamp ? b.timestamp.toDate() : new Date(b.date + ' ' + b.time);
-                        return timeA - timeB;
-                    });
-                    
-                    console.log('Registros carregados com consulta simplificada:', todayPunches.length);
-                    updateUI();
-                    
-                } catch (fallbackError) {
-                    console.error('Erro na consulta de fallback:', fallbackError);
-                    showError('Erro ao carregar histórico. Tente recarregar a página.', 'load');
-                }
+                showError('Erro ao carregar histórico. Os novos registros aparecerão normalmente.', 'load');
+                // Não falhar completamente - deixar a interface funcionar para novos registros
+                updateUI();
             }
         }
 
@@ -937,22 +916,14 @@
                 const saida = todayPunches[i + 1];
                 
                 if (entrada && saida && entrada.type === 'entrada' && saida.type === 'saida') {
-                    let entradaTime, saidaTime;
+                    // Usar strings de tempo para calcular diferença
+                    const entradaTime = new Date(`${entrada.date} ${entrada.time}`);
+                    const saidaTime = new Date(`${saida.date} ${saida.time}`);
                     
-                    if (entrada.timestamp) {
-                        entradaTime = entrada.timestamp.toDate();
-                    } else {
-                        entradaTime = new Date(entrada.date + ' ' + entrada.time);
+                    if (!isNaN(entradaTime) && !isNaN(saidaTime)) {
+                        const diffMinutes = (saidaTime - entradaTime) / (1000 * 60);
+                        totalMinutes += diffMinutes;
                     }
-                    
-                    if (saida.timestamp) {
-                        saidaTime = saida.timestamp.toDate();
-                    } else {
-                        saidaTime = new Date(saida.date + ' ' + saida.time);
-                    }
-                    
-                    const diffMinutes = (saidaTime - entradaTime) / (1000 * 60);
-                    totalMinutes += diffMinutes;
                 }
             }
             

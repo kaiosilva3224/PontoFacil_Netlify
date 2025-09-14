@@ -364,12 +364,15 @@
 
         // Verificar autenticação
         auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? user.email : 'No user');
+            
             if (user) {
                 currentUser = user;
                 document.getElementById('userGreeting').textContent = `Olá, ${user.email.split('@')[0]}!`;
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('punchSection').classList.remove('hidden');
                 loadTodayPunches();
+                getCurrentLocation(); // Obter localização quando logado
             } else {
                 currentUser = null;
                 document.getElementById('userGreeting').textContent = 'Olá, Visitante!';
@@ -508,8 +511,11 @@
 
         // Registrar ponto
         async function registerPunch() {
+            console.log('Tentando registrar ponto. Usuário:', currentUser ? currentUser.email : 'Não logado');
+            
             if (!currentUser) {
                 showError('Usuário não autenticado');
+                console.error('Usuário não autenticado');
                 return;
             }
 
@@ -564,19 +570,21 @@
                 const now = new Date();
                 const punchData = {
                     userId: currentUser.uid,
-                    userEmail: currentUser.email,
-                    timestamp: firebase.firestore.Timestamp.fromDate(now),
-                    date: now.toISOString().split('T')[0], // YYYY-MM-DD
+                    email: currentUser.email,
+                    timestamp: now,
+                    date: now.toISOString().split('T')[0],
                     time: now.toLocaleTimeString('pt-BR'),
-                    type: determineNextPunchType(),
                     location: currentLocation,
-                    createdAt: firebase.firestore.Timestamp.now()
+                    type: todayPunches.length % 2 === 0 ? 'entrada' : 'saida'
                 };
 
+                console.log('Dados do ponto a serem salvos:', punchData);
+
                 // Salvar no Firestore
-                await db.collection('punches').add(punchData);
+                const docRef = await db.collection('pontos').add(punchData);
+                console.log('Ponto salvo com ID:', docRef.id);
                 
-                showSuccess(`Ponto registrado com sucesso! Tipo: ${punchData.type}`);
+                showSuccess(`Ponto registrado com sucesso! (${punchData.type})`);
                 loadTodayPunches();
                 
             } catch (error) {

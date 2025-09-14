@@ -43,14 +43,19 @@
             opacity: 0.9;
         }
 
-        .menu-btn {
+        .logout-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 15px;
             color: white;
             cursor: pointer;
-            font-size: 1.2em;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .clock-card {
@@ -85,6 +90,27 @@
             gap: 8px;
         }
 
+        .location-info {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .location-coords {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
         .status-card {
             background: white;
             border-radius: 16px;
@@ -100,115 +126,125 @@
             color: #1a1a1a;
         }
 
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 8px 0;
-        }
-
-        .status-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .status-label {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .status-time {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .status-check {
-            color: #10B981;
-            font-size: 1.2em;
-        }
-
-        .status-pending {
-            color: #999;
-        }
-
-        .buttons-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .ponto-btn {
-            background: #6B7280;
+        .punch-button {
+            width: 100%;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 20px;
-            font-size: 1em;
+            padding: 18px;
+            font-size: 1.2em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            min-height: 80px;
-            justify-content: center;
+            margin-bottom: 15px;
         }
 
-        .ponto-btn:hover {
+        .punch-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
         }
 
-        .ponto-btn.chegada {
-            background: #6B7280;
-        }
-
-        .ponto-btn.almoco {
-            background: #6B7280;
-        }
-
-        .ponto-btn.saida {
-            background: #EF4444;
-        }
-
-        .ponto-btn.saida:hover {
-            background: #DC2626;
-        }
-
-        .ponto-btn:disabled {
-            opacity: 0.5;
+        .punch-button:disabled {
+            background: #ccc;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-icon {
-            font-size: 1.5em;
+        .punch-button.loading {
+            background: #999;
         }
 
-        .info-card {
+        .status-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .status-value.working {
+            color: #10B981;
+        }
+
+        .status-value.break {
+            color: #F59E0B;
+        }
+
+        .history-card {
             background: white;
             border-radius: 16px;
-            padding: 20px;
-            text-align: center;
+            padding: 25px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .info-line {
-            margin-bottom: 8px;
-            color: #666;
-            font-size: 0.95em;
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .info-line:last-child {
-            margin-bottom: 0;
+        .history-item:last-child {
+            border-bottom: none;
         }
 
-        .info-highlight {
+        .history-time {
             font-weight: 600;
-            color: #333;
+            color: #1a1a1a;
+        }
+
+        .history-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .history-type.entrada {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .history-type.saida {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .success-message {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .hidden {
+            display: none;
         }
 
         @media (max-width: 480px) {
@@ -219,352 +255,366 @@
             .clock-time {
                 font-size: 2.2em;
             }
-            
-            .buttons-grid {
-                gap: 10px;
-            }
-            
-            .ponto-btn {
-                padding: 15px;
-                min-height: 70px;
-                font-size: 0.9em;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div class="greeting">
-                <h1>Olá, <span id="userName">Funcionário</span>!</h1>
-                <p>Painel do Funcionário</p>
+                <h1 id="userGreeting">Olá, Usuário!</h1>
+                <p>Sistema de Controle de Ponto</p>
             </div>
-            <button class="menu-btn" id="logout-button">Sair</button>
+            <button class="logout-btn" onclick="logout()">Sair</button>
         </div>
 
-        <!-- Relógio -->
         <div class="clock-card">
             <div class="clock-icon">🕐</div>
-            <div class="clock-time" id="clockTime">14:26:55</div>
-            <div class="clock-date">
-                <span>📅</span>
-                <span id="clockDate">segunda-feira, 8 de setembro de 2025</span>
+            <div class="clock-time" id="currentTime">--:--:--</div>
+            <div class="clock-date" id="currentDate">
+                📅 <span>--/--/----</span>
+            </div>
+            <div class="location-info">
+                <div class="location-status" id="locationStatus">
+                    📍 Obtendo localização...
+                </div>
+                <div class="location-coords" id="locationCoords"></div>
             </div>
         </div>
 
-        <!-- Status do Dia -->
         <div class="status-card">
-            <div class="status-title">Status do Dia</div>
+            <h2 class="status-title">Registrar Ponto</h2>
             
-            <div class="status-item">
-                <span class="status-label">Chegada:</span>
-                <div class="status-time">
-                    <span id="chegadaTime" class="status-pending">--:--</span>
-                    <span id="chegadaCheck" class="status-check" style="display: none;">✓</span>
-                </div>
+            <div id="errorMessage" class="error-message hidden"></div>
+            <div id="successMessage" class="success-message hidden"></div>
+            
+            <button class="punch-button" id="punchButton" onclick="registerPunch()">
+                🕐 Bater Ponto
+            </button>
+            
+            <div class="status-info">
+                <span class="status-label">Status Atual:</span>
+                <span class="status-value" id="currentStatus">Fora do expediente</span>
             </div>
-
-            <div class="status-item">
-                <span class="status-label">Início Almoço:</span>
-                <div class="status-time">
-                    <span id="inicioAlmocoTime" class="status-pending">--:--</span>
-                    <span id="inicioAlmocoCheck" class="status-check" style="display: none;">✓</span>
-                </div>
+            
+            <div class="status-info">
+                <span class="status-label">Último Registro:</span>
+                <span class="status-value" id="lastPunch">Nenhum registro hoje</span>
             </div>
-
-            <div class="status-item">
-                <span class="status-label">Fim Almoço:</span>
-                <div class="status-time">
-                    <span id="fimAlmocoTime" class="status-pending">--:--</span>
-                    <span id="fimAlmocoCheck" class="status-check" style="display: none;">✓</span>
-                </div>
-            </div>
-
-            <div class="status-item">
-                <span class="status-label">Saída:</span>
-                <div class="status-time">
-                    <span id="saidaTime" class="status-pending">--:--</span>
-                    <span id="saidaCheck" class="status-check" style="display: none;">✓</span>
-                </div>
+            
+            <div class="status-info">
+                <span class="status-label">Horas Trabalhadas:</span>
+                <span class="status-value" id="workedHours">00:00</span>
             </div>
         </div>
 
-        <!-- Botões de Ação -->
-        <div class="buttons-grid">
-            <button class="ponto-btn chegada" id="btnChegada" onclick="marcarPonto('chegada')">
-                <span class="btn-icon">🏠</span>
-                <span>Marcar Chegada</span>
-            </button>
-
-            <button class="ponto-btn almoco" id="btnInicioAlmoco" onclick="marcarPonto('inicioAlmoco')">
-                <span class="btn-icon">🍽️</span>
-                <span>Início Almoço</span>
-            </button>
-
-            <button class="ponto-btn almoco" id="btnFimAlmoco" onclick="marcarPonto('fimAlmoco')" disabled>
-                <span class="btn-icon">🍽️</span>
-                <span>Fim Almoço</span>
-            </button>
-
-            <button class="ponto-btn saida" id="btnSaida" onclick="marcarPonto('saida')" disabled>
-                <span class="btn-icon">🚪</span>
-                <span>Marcar Saída</span>
-            </button>
-        </div>
-
-        <!-- Informações -->
-        <div class="info-card">
-            <div class="info-line">
-                <span class="info-highlight">Horário padrão:</span> 08:00 às 17:00
-            </div>
-            <div class="info-line">
-                <span class="info-highlight">Almoço:</span> 12:00 às 13:00 (máx. 1h)
-            </div>
-            <div class="info-line">
-                Atrasos são calculados automaticamente
+        <div class="history-card">
+            <h2 class="status-title">Histórico de Hoje</h2>
+            <div id="todayHistory">
+                <p style="color: #666; text-align: center; padding: 20px;">
+                    Nenhum registro encontrado para hoje
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // Your web app's Firebase configuration
+        // Configuração do Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyAuGRbcAkCTRJFQ_3_g8VvX2kuLdSFEQg",
-          authDomain: "pontofacil-f4766.firebaseapp.com",
-          projectId: "pontofacil-f4766",
-          storageBucket: "pontofacil-f4766.appspot.com",
-          messagingSenderId: "160973674012",
-          appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
-          measurementId: "G-Z5NGQVXY2V"
+            apiKey: "AIzaSyAUgRbcAkCTRjF4q_3_g8vVx2kuLdSfEQg",
+            authDomain: "pontofacil-f4766.firebaseapp.com",
+            projectId: "pontofacil-f4766",
+            storageBucket: "pontofacil-f4766.firebasestorage.app",
+            messagingSenderId: "160973674012",
+            appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+            measurementId: "G-Z5NGQVXY2V"
         };
 
-        // Initialize Firebase
+        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const auth = firebase.auth();
-        const logoutButton = document.getElementById('logout-button');
+        // Variáveis globais
+        let currentUser = null;
+        let userLocation = null;
+        let todayPunches = [];
 
-        // Check authentication state on page load
+        // Verificar autenticação
         auth.onAuthStateChanged((user) => {
-            const hostname = window.location.hostname;
-            if (!user) {
-                // User is not signed in, redirect to login page
-                if (hostname.includes('ponto')) {
-                    window.location.href = '/'; // Redireciona para a raiz do domínio principal
-                } else {
-                    window.location.href = '/';
-                }
+            if (user) {
+                currentUser = user;
+                document.getElementById('userGreeting').textContent = `Olá, ${user.email.split('@')[0]}!`;
+                loadTodayPunches();
             } else {
-                // User is signed in, ensure they are on the correct page for the subdomain
-                if (!hostname.includes('ponto')) {
-                    // If logged in but not on ponto subdomain, redirect to ponto page
-                    window.location.href = 'http://ponto.pontofacil.app.br';
-                } else {
-                    // User is signed in and on correct page, display user email
-                    document.getElementById('userName').textContent = user.email;
-                    carregarDados(); // Carrega os dados do Firestore após o login
-                }
+                window.location.href = '/index.html';
             }
         });
 
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
+        // Função de logout
+        function logout() {
             auth.signOut().then(() => {
-                // Sign-out successful.
-                window.location.href = '/';
-            }).catch((error) => {
-                // An error happened.
-                console.error('Erro ao fazer logout:', error);
-                alert('Erro ao fazer logout. Tente novamente.');
+                window.location.href = '/index.html';
             });
-        });
+        }
 
-        // Estado dos pontos
-        let pontos = {
-            chegada: null,
-            inicioAlmoco: null,
-            fimAlmoco: null,
-            saida: null
-        };
+        // Atualizar relógio em tempo real
+        function updateClock() {
+            const now = new Date();
+            
+            // Horário
+            const timeString = now.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+            
+            // Data
+            const dateString = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentDate').innerHTML = `📅 <span>${dateString}</span>`;
+        }
 
-        // Carregar dados salvos
-        function carregarDados() {
-            const user = auth.currentUser;
-            if (user) {
-                const userDocRef = db.collection("pontos").doc(user.uid);
-                userDocRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const hoje = new Date().toDateString();
-                        if (data.data === hoje) {
-                            pontos = data;
-                        } else {
-                            // Se a data for diferente, limpa os pontos para o novo dia
-                            pontos = {
-                                chegada: null,
-                                inicioAlmoco: null,
-                                fimAlmoco: null,
-                                saida: null
-                            };
-                            // Opcional: remover o documento antigo do Firestore se quiser um histórico limpo por dia
-                            // userDocRef.delete().then(() => console.log("Documento antigo removido."));
-                        }
-                        atualizarInterface();
-                    } else {
-                        console.log("Nenhum ponto encontrado para este usuário.");
-                        atualizarInterface(); // Atualiza a interface mesmo sem dados
+        // Obter geolocalização
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date()
+                        };
+                        
+                        document.getElementById('locationStatus').innerHTML = '📍 Localização obtida';
+                        document.getElementById('locationCoords').textContent = 
+                            `Lat: ${userLocation.latitude.toFixed(6)}, Lng: ${userLocation.longitude.toFixed(6)}`;
+                    },
+                    (error) => {
+                        console.error('Erro ao obter localização:', error);
+                        document.getElementById('locationStatus').innerHTML = '📍 Erro na localização';
+                        document.getElementById('locationCoords').textContent = 'Localização não disponível';
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000 // 5 minutos
                     }
-                }).catch((error) => {
-                    console.error("Erro ao carregar pontos do Firestore:", error);
-                });
+                );
             } else {
-                console.log("Usuário não autenticado. Não é possível carregar pontos do Firestore.");
+                document.getElementById('locationStatus').innerHTML = '📍 Geolocalização não suportada';
             }
         }
 
-        // Salvar dados (não mais necessário, pois o Firestore lida com a persistência)
-        function salvarDados() {
-            // Esta função agora está vazia, pois os dados são salvos diretamente no Firestore
-        }
+        // Registrar ponto
+        async function registerPunch() {
+            if (!currentUser) {
+                showError('Usuário não autenticado');
+                return;
+            }
 
-        // Atualizar relógio
-        function atualizarRelogio() {
-            const agora = new Date();
-            
-            const horas = agora.getHours().toString().padStart(2, '0');
-            const minutos = agora.getMinutes().toString().padStart(2, '0');
-            const segundos = agora.getSeconds().toString().padStart(2, '0');
-            
-            document.getElementById('clockTime').textContent = `${horas}:${minutos}:${segundos}`;
-            
-            const opcoes = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            };
-            const dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
-            document.getElementById('clockDate').textContent = dataFormatada;
-        }
+            const button = document.getElementById('punchButton');
+            button.disabled = true;
+            button.textContent = '⏳ Registrando...';
+            button.classList.add('loading');
 
-        // Marcar ponto
-        function marcarPonto(tipo) {
-            const agora = new Date();
-            const horaFormatada = agora.toLocaleTimeString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-            
-            pontos[tipo] = horaFormatada;
-            
-            const user = auth.currentUser;
-            if (user) {
-                const userDocRef = db.collection("pontos").doc(user.uid);
-                userDocRef.set({
-                    ...pontos, // Salva todos os pontos atuais
-                    data: new Date().toDateString() // Salva a data para verificar o dia
-                }, { merge: true })
-                .then(() => {
-                    console.log("Ponto salvo no Firestore!");
-                    atualizarInterface();
-                })
-                .catch((error) => {
-                    console.error("Erro ao salvar ponto no Firestore:", error);
-                    alert("Erro ao salvar ponto. Tente novamente.");
+            try {
+                // Obter localização atual
+                await new Promise((resolve, reject) => {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 5000
+                        });
+                    } else {
+                        reject(new Error('Geolocalização não suportada'));
+                    }
                 });
-            } else {
-                alert("Usuário não autenticado. Faça login para marcar o ponto.");
+
+                const now = new Date();
+                const punchData = {
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    timestamp: firebase.firestore.Timestamp.fromDate(now),
+                    date: now.toISOString().split('T')[0], // YYYY-MM-DD
+                    time: now.toLocaleTimeString('pt-BR'),
+                    type: determineNextPunchType(),
+                    location: userLocation,
+                    createdAt: firebase.firestore.Timestamp.now()
+                };
+
+                // Salvar no Firestore
+                await db.collection('punches').add(punchData);
+                
+                showSuccess(`Ponto registrado com sucesso! Tipo: ${punchData.type}`);
+                loadTodayPunches();
+                
+            } catch (error) {
+                console.error('Erro ao registrar ponto:', error);
+                showError('Erro ao registrar ponto: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = '🕐 Bater Ponto';
+                button.classList.remove('loading');
+            }
+        }
+
+        // Determinar próximo tipo de ponto
+        function determineNextPunchType() {
+            if (todayPunches.length === 0) {
+                return 'Entrada';
             }
             
-            // Feedback visual
-            const tipoTexto = {
-                'chegada': 'Chegada',
-                'inicioAlmoco': 'Início do Almoço',
-                'fimAlmoco': 'Fim do Almoço',
-                'saida': 'Saída'
-            };
-            
-            alert(`${tipoTexto[tipo]} marcada às ${horaFormatada}`);
+            const lastPunch = todayPunches[todayPunches.length - 1];
+            return lastPunch.type === 'Entrada' ? 'Saída' : 'Entrada';
+        }
+
+        // Carregar registros de hoje
+        async function loadTodayPunches() {
+            if (!currentUser) return;
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const snapshot = await db.collection('punches')
+                    .where('userId', '==', currentUser.uid)
+                    .where('date', '==', today)
+                    .orderBy('timestamp', 'asc')
+                    .get();
+
+                todayPunches = [];
+                snapshot.forEach(doc => {
+                    todayPunches.push({ id: doc.id, ...doc.data() });
+                });
+
+                updateUI();
+            } catch (error) {
+                console.error('Erro ao carregar registros:', error);
+            }
         }
 
         // Atualizar interface
-        function atualizarInterface() {
-            // Atualizar status
-            Object.keys(pontos).forEach(tipo => {
-                const timeElement = document.getElementById(`${tipo}Time`);
-                const checkElement = document.getElementById(`${tipo}Check`);
-                
-                if (pontos[tipo]) {
-                    timeElement.textContent = pontos[tipo];
-                    timeElement.className = '';
-                    checkElement.style.display = 'inline';
-                } else {
-                    timeElement.textContent = '--:--';
-                    timeElement.className = 'status-pending';
-                    checkElement.style.display = 'none';
-                }
-            });
+        function updateUI() {
+            updateStatus();
+            updateHistory();
+            calculateWorkedHours();
+        }
 
-            // Atualizar botões
-            const btnChegada = document.getElementById('btnChegada');
-            const btnInicioAlmoco = document.getElementById('btnInicioAlmoco');
-            const btnFimAlmoco = document.getElementById('btnFimAlmoco');
-            const btnSaida = document.getElementById('btnSaida');
-
-            if (pontos.chegada) {
-                btnChegada.disabled = true;
-                btnInicioAlmoco.disabled = false;
+        // Atualizar status atual
+        function updateStatus() {
+            const statusElement = document.getElementById('currentStatus');
+            const lastPunchElement = document.getElementById('lastPunch');
+            
+            if (todayPunches.length === 0) {
+                statusElement.textContent = 'Fora do expediente';
+                statusElement.className = 'status-value';
+                lastPunchElement.textContent = 'Nenhum registro hoje';
             } else {
-                btnChegada.disabled = false;
-                btnInicioAlmoco.disabled = true;
-                btnFimAlmoco.disabled = true;
-                btnSaida.disabled = true;
-            }
-
-            if (pontos.inicioAlmoco) {
-                btnInicioAlmoco.disabled = true;
-                btnFimAlmoco.disabled = false;
-            }
-
-            if (pontos.fimAlmoco) {
-                btnFimAlmoco.disabled = true;
-                btnSaida.disabled = false;
-            }
-
-            if (pontos.saida) {
-                btnSaida.disabled = true;
+                const lastPunch = todayPunches[todayPunches.length - 1];
+                if (lastPunch.type === 'Entrada') {
+                    statusElement.textContent = 'Trabalhando';
+                    statusElement.className = 'status-value working';
+                } else {
+                    statusElement.textContent = 'Fora do expediente';
+                    statusElement.className = 'status-value';
+                }
+                lastPunchElement.textContent = `${lastPunch.type} às ${lastPunch.time}`;
             }
         }
 
-        // Inicializar relógio e carregar dados ao carregar a página
-        setInterval(atualizarRelogio, 1000);
-        atualizarRelogio(); // Chama imediatamente para evitar atraso inicial
-
-        // Chamado quando o estado de autenticação muda
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('userName').textContent = user.email;
-                carregarDados();
-            } else {
-                // Se o usuário deslogar, limpa a interface
-                pontos = {
-                    chegada: null,
-                    inicioAlmoco: null,
-                    fimAlmoco: null,
-                    saida: null
-                };
-                atualizarInterface();
-                document.getElementById('userName').textContent = 'Funcionário';
+        // Atualizar histórico
+        function updateHistory() {
+            const historyElement = document.getElementById('todayHistory');
+            
+            if (todayPunches.length === 0) {
+                historyElement.innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 20px;">
+                        Nenhum registro encontrado para hoje
+                    </p>
+                `;
+                return;
             }
-        });
 
+            const historyHTML = todayPunches.map(punch => `
+                <div class="history-item">
+                    <span class="history-time">${punch.time}</span>
+                    <span class="history-type ${punch.type.toLowerCase()}">${punch.type}</span>
+                </div>
+            `).join('');
+
+            historyElement.innerHTML = historyHTML;
+        }
+
+        // Calcular horas trabalhadas
+        function calculateWorkedHours() {
+            let totalMinutes = 0;
+            
+            for (let i = 0; i < todayPunches.length; i += 2) {
+                const entrada = todayPunches[i];
+                const saida = todayPunches[i + 1];
+                
+                if (entrada && saida && entrada.type === 'Entrada' && saida.type === 'Saída') {
+                    const entradaTime = entrada.timestamp.toDate();
+                    const saidaTime = saida.timestamp.toDate();
+                    const diffMinutes = (saidaTime - entradaTime) / (1000 * 60);
+                    totalMinutes += diffMinutes;
+                }
+            }
+            
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.floor(totalMinutes % 60);
+            
+            document.getElementById('workedHours').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        // Mostrar mensagem de erro
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            const successElement = document.getElementById('successMessage');
+            
+            successElement.classList.add('hidden');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Mostrar mensagem de sucesso
+        function showSuccess(message) {
+            const errorElement = document.getElementById('errorMessage');
+            const successElement = document.getElementById('successMessage');
+            
+            errorElement.classList.add('hidden');
+            successElement.textContent = message;
+            successElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            getCurrentLocation();
+            
+            // Atualizar localização a cada 5 minutos
+            setInterval(getCurrentLocation, 300000);
+        });
     </script>
 </body>
 </html>
-

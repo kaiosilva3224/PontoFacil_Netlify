@@ -386,8 +386,15 @@
         }
 
         // Obter geolocalização
+        let locationRequested = false;
+        
         function getCurrentLocation() {
+            if (locationRequested) return; // Evitar múltiplas requisições
+            
             if (navigator.geolocation) {
+                locationRequested = true;
+                document.getElementById('locationStatus').innerHTML = '📍 Obtendo localização...';
+                
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         userLocation = {
@@ -400,16 +407,18 @@
                         document.getElementById('locationStatus').innerHTML = '📍 Localização obtida';
                         document.getElementById('locationCoords').textContent = 
                             `Lat: ${userLocation.latitude.toFixed(6)}, Lng: ${userLocation.longitude.toFixed(6)}`;
+                        locationRequested = false;
                     },
                     (error) => {
                         console.error('Erro ao obter localização:', error);
                         document.getElementById('locationStatus').innerHTML = '📍 Erro na localização';
                         document.getElementById('locationCoords').textContent = 'Localização não disponível';
+                        locationRequested = false;
                     },
                     {
                         enableHighAccuracy: true,
                         timeout: 10000,
-                        maximumAge: 300000 // 5 minutos
+                        maximumAge: 600000 // 10 minutos
                     }
                 );
             } else {
@@ -430,17 +439,35 @@
             button.classList.add('loading');
 
             try {
-                // Obter localização atual
-                await new Promise((resolve, reject) => {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, {
-                            enableHighAccuracy: true,
-                            timeout: 5000
-                        });
-                    } else {
-                        reject(new Error('Geolocalização não suportada'));
-                    }
-                });
+                // Usar localização já obtida ou obter nova se necessário
+                let currentLocation = userLocation;
+                
+                if (!currentLocation || (new Date() - currentLocation.timestamp) > 600000) {
+                    // Obter nova localização se não temos ou se é muito antiga (10 min)
+                    currentLocation = await new Promise((resolve, reject) => {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    resolve({
+                                        latitude: position.coords.latitude,
+                                        longitude: position.coords.longitude,
+                                        accuracy: position.coords.accuracy,
+                                        timestamp: new Date()
+                                    });
+                                },
+                                reject,
+                                {
+                                    enableHighAccuracy: true,
+                                    timeout: 8000,
+                                    maximumAge: 300000
+                                }
+                            );
+                        } else {
+                            reject(new Error('Geolocalização não suportada'));
+                        }
+                    });
+                    userLocation = currentLocation;
+                }
 
                 const now = new Date();
                 const punchData = {
@@ -450,7 +477,7 @@
                     date: now.toISOString().split('T')[0], // YYYY-MM-DD
                     time: now.toLocaleTimeString('pt-BR'),
                     type: determineNextPunchType(),
-                    location: userLocation,
+                    location: currentLocation,
                     createdAt: firebase.firestore.Timestamp.now()
                 };
 
@@ -612,8 +639,8 @@
             setInterval(updateClock, 1000);
             getCurrentLocation();
             
-            // Atualizar localização a cada 5 minutos
-            setInterval(getCurrentLocation, 300000);
+            // Não atualizar localização automaticamente para evitar loop
+            // A localização será obtida novamente apenas quando necessário
         });
     </script>
 </body>

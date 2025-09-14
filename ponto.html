@@ -288,9 +288,26 @@
             <div id="errorMessage" class="error-message hidden"></div>
             <div id="successMessage" class="success-message hidden"></div>
             
-            <button class="punch-button" id="punchButton" onclick="registerPunch()">
-                🕐 Bater Ponto
-            </button>
+            <!-- Formulário de login (mostrado apenas se não autenticado) -->
+            <div id="loginForm" class="hidden">
+                <div style="margin-bottom: 15px;">
+                    <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                    <input type="password" id="loginPassword" placeholder="Senha" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <button onclick="quickLogin()" style="width: 100%; background: #4F46E5; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1em; margin-bottom: 10px; cursor: pointer;">
+                    Fazer Login
+                </button>
+                <p style="text-align: center; color: #666; font-size: 0.9em;">
+                    Não tem conta? <a href="https://pontofacil-webapp.netlify.app" style="color: #4F46E5;">Registre-se aqui</a>
+                </p>
+            </div>
+            
+            <!-- Botão de bater ponto (mostrado apenas se autenticado) -->
+            <div id="punchSection">
+                <button class="punch-button" id="punchButton" onclick="registerPunch()">
+                    🕐 Bater Ponto
+                </button>
+            </div>
             
             <div class="status-info">
                 <span class="status-label">Status Atual:</span>
@@ -350,16 +367,59 @@
             if (user) {
                 currentUser = user;
                 document.getElementById('userGreeting').textContent = `Olá, ${user.email.split('@')[0]}!`;
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('punchSection').classList.remove('hidden');
                 loadTodayPunches();
             } else {
-                window.location.href = '/index.html';
+                currentUser = null;
+                document.getElementById('userGreeting').textContent = 'Olá, Visitante!';
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('punchSection').classList.add('hidden');
             }
         });
+
+        // Função de login rápido
+        async function quickLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError('Por favor, preencha email e senha');
+                return;
+            }
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showSuccess('Login realizado com sucesso!');
+            } catch (error) {
+                console.error('Erro no login:', error);
+                let errorMessage = 'Erro no login';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'Usuário não encontrado';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Senha incorreta';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+                        break;
+                    default:
+                        errorMessage = 'Erro no login: ' + error.message;
+                }
+                
+                showError(errorMessage);
+            }
+        }
 
         // Função de logout
         function logout() {
             auth.signOut().then(() => {
-                window.location.href = '/index.html';
+                showSuccess('Logout realizado com sucesso!');
             });
         }
 

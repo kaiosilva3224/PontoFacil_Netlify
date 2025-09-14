@@ -1,9 +1,15 @@
 [build]
   publish = "."
 
-# Redirects para subdomínios específicos
+# Redirects para subdomínios específicos (HTTP e HTTPS)
 [[redirects]]
   from = "https://admin.pontofacil.app.br/*"
+  to = "/admin.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "http://admin.pontofacil.app.br/*"
   to = "/admin.html"
   status = 200
   force = true
@@ -15,12 +21,24 @@
   force = true
 
 [[redirects]]
+  from = "http://app.pontofacil.app.br/*"
+  to = "/empresa.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "https://ponto.pontofacil.app.br/*"
   to = "/ponto.html"
   status = 200
   force = true
 
-# Redirects para domínio principal
+[[redirects]]
+  from = "http://ponto.pontofacil.app.br/*"
+  to = "/ponto.html"
+  status = 200
+  force = true
+
+# Redirects para domínio principal (HTTP e HTTPS)
 [[redirects]]
   from = "https://www.pontofacil.app.br/*"
   to = "/index.html"
@@ -28,7 +46,19 @@
   force = true
 
 [[redirects]]
+  from = "http://www.pontofacil.app.br/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "https://pontofacil.app.br/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "http://pontofacil.app.br/*"
   to = "/index.html"
   status = 200
   force = true
@@ -48,6 +78,13 @@
   from = "/ponto"
   to = "/ponto.html"
   status = 200
+
+# Headers para permitir geolocalização
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "geolocation=(self)"
+    Feature-Policy = "geolocation 'self'"
 
 # SPA fallback (deve ser o último)
 [[redirects]]

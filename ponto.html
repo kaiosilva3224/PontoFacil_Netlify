@@ -411,18 +411,38 @@
                     },
                     (error) => {
                         console.error('Erro ao obter localização:', error);
-                        document.getElementById('locationStatus').innerHTML = '📍 Erro na localização';
-                        document.getElementById('locationCoords').textContent = 'Localização não disponível';
+                        let errorMessage = '';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Permissão de localização negada';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Localização indisponível';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Tempo limite excedido';
+                                break;
+                            default:
+                                errorMessage = 'Erro desconhecido';
+                                break;
+                        }
+                        
+                        document.getElementById('locationStatus').innerHTML = `📍 ${errorMessage}`;
+                        document.getElementById('locationCoords').innerHTML = 
+                            '<span style="color: #666; font-size: 0.8em;">Você pode registrar ponto sem GPS</span>';
                         locationRequested = false;
                     },
                     {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
+                        enableHighAccuracy: false, // Reduzir precisão para melhor compatibilidade
+                        timeout: 15000, // Aumentar timeout
                         maximumAge: 600000 // 10 minutos
                     }
                 );
             } else {
                 document.getElementById('locationStatus').innerHTML = '📍 Geolocalização não suportada';
+                document.getElementById('locationCoords').innerHTML = 
+                    '<span style="color: #666; font-size: 0.8em;">Você pode registrar ponto sem GPS</span>';
             }
         }
 
@@ -443,30 +463,42 @@
                 let currentLocation = userLocation;
                 
                 if (!currentLocation || (new Date() - currentLocation.timestamp) > 600000) {
-                    // Obter nova localização se não temos ou se é muito antiga (10 min)
-                    currentLocation = await new Promise((resolve, reject) => {
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(
-                                (position) => {
-                                    resolve({
-                                        latitude: position.coords.latitude,
-                                        longitude: position.coords.longitude,
-                                        accuracy: position.coords.accuracy,
-                                        timestamp: new Date()
-                                    });
-                                },
-                                reject,
-                                {
-                                    enableHighAccuracy: true,
-                                    timeout: 8000,
-                                    maximumAge: 300000
-                                }
-                            );
-                        } else {
-                            reject(new Error('Geolocalização não suportada'));
-                        }
-                    });
-                    userLocation = currentLocation;
+                    // Tentar obter nova localização, mas não falhar se não conseguir
+                    try {
+                        currentLocation = await new Promise((resolve, reject) => {
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    (position) => {
+                                        resolve({
+                                            latitude: position.coords.latitude,
+                                            longitude: position.coords.longitude,
+                                            accuracy: position.coords.accuracy,
+                                            timestamp: new Date()
+                                        });
+                                    },
+                                    reject,
+                                    {
+                                        enableHighAccuracy: false,
+                                        timeout: 8000,
+                                        maximumAge: 300000
+                                    }
+                                );
+                            } else {
+                                reject(new Error('Geolocalização não suportada'));
+                            }
+                        });
+                        userLocation = currentLocation;
+                    } catch (locationError) {
+                        console.warn('Não foi possível obter localização, mas continuando com o registro:', locationError);
+                        // Usar localização padrão se não conseguir obter GPS
+                        currentLocation = {
+                            latitude: null,
+                            longitude: null,
+                            accuracy: null,
+                            timestamp: new Date(),
+                            error: 'Localização não disponível'
+                        };
+                    }
                 }
 
                 const now = new Date();

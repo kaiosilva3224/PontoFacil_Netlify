@@ -140,7 +140,7 @@
             margin-bottom: 15px;
         }
 
-        .punch-button:hover {
+        .punch-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
         }
@@ -153,6 +153,27 @@
 
         .punch-button.loading {
             background: #999;
+            position: relative;
+        }
+
+        .punch-button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
         }
 
         .status-info {
@@ -228,23 +249,95 @@
         .error-message {
             background: #FEE2E2;
             color: #991B1B;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
             font-size: 0.9em;
+            border-left: 4px solid #DC2626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .success-message {
             background: #D1FAE5;
             color: #065F46;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
             font-size: 0.9em;
+            border-left: 4px solid #10B981;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-message {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #F59E0B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-message {
+            background: #DBEAFE;
+            color: #1E40AF;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #3B82F6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .hidden {
             display: none;
+        }
+
+        .retry-button {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .retry-button:hover {
+            background: #D97706;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .connection-status.offline {
+            background: #FEE2E2;
+            color: #991B1B;
         }
 
         @media (max-width: 480px) {
@@ -255,10 +348,17 @@
             .clock-time {
                 font-size: 2.2em;
             }
+
+            .connection-status {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="connection-status" id="connectionStatus">🟢 Online</div>
+
     <div class="container">
         <div class="header">
             <div class="greeting">
@@ -285,8 +385,28 @@
         <div class="status-card">
             <h2 class="status-title">Registrar Ponto</h2>
             
-            <div id="errorMessage" class="error-message hidden"></div>
-            <div id="successMessage" class="success-message hidden"></div>
+            <div id="errorMessage" class="error-message hidden">
+                <span>❌</span>
+                <div>
+                    <div id="errorText"></div>
+                    <button class="retry-button hidden" id="retryButton" onclick="retryLastAction()">Tentar Novamente</button>
+                </div>
+            </div>
+            
+            <div id="successMessage" class="success-message hidden">
+                <span>✅</span>
+                <div id="successText"></div>
+            </div>
+
+            <div id="warningMessage" class="warning-message hidden">
+                <span>⚠️</span>
+                <div id="warningText"></div>
+            </div>
+
+            <div id="infoMessage" class="info-message hidden">
+                <span>ℹ️</span>
+                <div id="infoText"></div>
+            </div>
             
             <!-- Formulário de login (mostrado apenas se não autenticado) -->
             <div id="loginForm" class="hidden">
@@ -329,7 +449,7 @@
             <h2 class="status-title">Histórico de Hoje</h2>
             <div id="todayHistory">
                 <p style="color: #666; text-align: center; padding: 20px;">
-                    Nenhum registro encontrado para hoje
+                    Carregando histórico...
                 </p>
             </div>
         </div>
@@ -361,6 +481,35 @@
         let currentUser = null;
         let userLocation = null;
         let todayPunches = [];
+        let lastFailedAction = null;
+        let isOnline = navigator.onLine;
+
+        // Monitorar conexão
+        window.addEventListener('online', () => {
+            isOnline = true;
+            updateConnectionStatus();
+            if (currentUser) {
+                showInfo('Conexão restaurada. Sincronizando dados...');
+                loadTodayPunches();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            updateConnectionStatus();
+            showWarning('Sem conexão com a internet. Algumas funcionalidades podem não funcionar.');
+        });
+
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            if (isOnline) {
+                statusElement.textContent = '🟢 Online';
+                statusElement.className = 'connection-status online';
+            } else {
+                statusElement.textContent = '🔴 Offline';
+                statusElement.className = 'connection-status offline';
+            }
+        }
 
         // Verificar autenticação
         auth.onAuthStateChanged((user) => {
@@ -378,7 +527,6 @@
                 document.getElementById('userGreeting').textContent = 'Olá, Visitante!';
                 document.getElementById('loginForm').classList.remove('hidden');
                 document.getElementById('punchSection').classList.add('hidden');
-                // Limpar dados quando não logado
                 todayPunches = [];
                 updateUI();
             }
@@ -391,6 +539,11 @@
             
             if (!email || !password) {
                 showError('Por favor, preencha email e senha');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
                 return;
             }
             
@@ -414,18 +567,28 @@
                     case 'auth/too-many-requests':
                         errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
                         break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Erro de conexão. Verifique sua internet';
+                        break;
                     default:
                         errorMessage = 'Erro no login: ' + error.message;
                 }
                 
-                showError(errorMessage);
+                showError(errorMessage, 'login');
             }
         }
 
         // Função de logout
         function logout() {
+            if (!isOnline) {
+                showWarning('Sem conexão. O logout será feito localmente.');
+            }
+            
             auth.signOut().then(() => {
                 showSuccess('Logout realizado com sucesso!');
+            }).catch((error) => {
+                console.error('Erro no logout:', error);
+                showError('Erro ao fazer logout, mas você foi desconectado localmente.');
             });
         }
 
@@ -433,7 +596,6 @@
         function updateClock() {
             const now = new Date();
             
-            // Horário
             const timeString = now.toLocaleTimeString('pt-BR', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -441,7 +603,6 @@
             });
             document.getElementById('currentTime').textContent = timeString;
             
-            // Data
             const dateString = now.toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 year: 'numeric',
@@ -482,6 +643,7 @@
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
                                 errorMessage = 'Permissão de localização negada';
+                                showWarning('Localização negada. Você ainda pode registrar ponto, mas sem coordenadas GPS.');
                                 break;
                             case error.POSITION_UNAVAILABLE:
                                 errorMessage = 'Localização indisponível';
@@ -518,7 +680,11 @@
             
             if (!currentUser) {
                 showError('Usuário não autenticado');
-                console.error('Usuário não autenticado');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Não é possível registrar ponto offline.', 'punch');
                 return;
             }
 
@@ -569,12 +735,8 @@
                 }
 
                 const now = new Date();
-                
-                // Criar timestamp mais simples para evitar problemas de índice
-                const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-                const timeStr = now.toLocaleTimeString('pt-BR'); // HH:MM:SS
-                
-                // Determinar tipo baseado no número de registros hoje
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toLocaleTimeString('pt-BR');
                 const punchType = todayPunches.length % 2 === 0 ? 'entrada' : 'saida';
                 
                 const punchData = {
@@ -590,19 +752,32 @@
 
                 console.log('Dados do ponto a serem salvos:', punchData);
 
-                // Salvar no Firestore com estrutura mais simples
+                // Salvar no Firestore
                 const docRef = await db.collection('pontos').add(punchData);
                 console.log('Ponto salvo com ID:', docRef.id);
                 
-                // Adicionar à lista local imediatamente para atualizar UI
+                // Adicionar à lista local imediatamente
                 todayPunches.push({ id: docRef.id, ...punchData });
                 
-                showSuccess(`Ponto registrado com sucesso! (${punchType})`);
+                showSuccess(`Ponto registrado com sucesso! (${punchType.charAt(0).toUpperCase() + punchType.slice(1)})`);
                 updateUI();
                 
             } catch (error) {
                 console.error('Erro ao registrar ponto:', error);
-                showError('Erro ao registrar ponto: ' + error.message);
+                let errorMessage = 'Erro ao registrar ponto';
+                
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Sem permissão para salvar dados. Verifique sua autenticação.';
+                } else if (error.code === 'unavailable') {
+                    errorMessage = 'Serviço temporariamente indisponível. Tente novamente.';
+                } else if (error.message.includes('network')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                } else {
+                    errorMessage = 'Erro ao registrar ponto: ' + error.message;
+                }
+                
+                showError(errorMessage, 'punch');
+                
             } finally {
                 button.disabled = false;
                 button.textContent = '🕐 Bater Ponto';
@@ -610,15 +785,19 @@
             }
         }
 
-        // Carregar registros de hoje - versão simplificada
+        // Carregar registros de hoje
         async function loadTodayPunches() {
             if (!currentUser) return;
+
+            if (!isOnline) {
+                showWarning('Sem conexão. Não é possível carregar histórico.');
+                return;
+            }
 
             try {
                 const today = new Date().toISOString().split('T')[0];
                 console.log('Carregando registros para:', currentUser.email, 'data:', today);
                 
-                // Consulta mais simples sem ordenação complexa
                 const snapshot = await db.collection('pontos')
                     .where('userId', '==', currentUser.uid)
                     .where('date', '==', today)
@@ -645,7 +824,8 @@
                 
             } catch (error) {
                 console.error('Erro ao carregar registros:', error);
-                // Tentar consulta ainda mais simples se a primeira falhar
+                
+                // Tentar consulta de fallback
                 try {
                     const snapshot = await db.collection('pontos')
                         .where('userId', '==', currentUser.uid)
@@ -661,7 +841,6 @@
                         }
                     });
                     
-                    // Ordenar localmente
                     todayPunches.sort((a, b) => {
                         const timeA = a.timestamp ? a.timestamp.toDate() : new Date(a.date + ' ' + a.time);
                         const timeB = b.timestamp ? b.timestamp.toDate() : new Date(b.date + ' ' + b.time);
@@ -673,7 +852,26 @@
                     
                 } catch (fallbackError) {
                     console.error('Erro na consulta de fallback:', fallbackError);
-                    showError('Erro ao carregar histórico. Tente recarregar a página.');
+                    showError('Erro ao carregar histórico. Tente recarregar a página.', 'load');
+                }
+            }
+        }
+
+        // Tentar novamente a última ação
+        function retryLastAction() {
+            if (lastFailedAction) {
+                switch (lastFailedAction) {
+                    case 'login':
+                        quickLogin();
+                        break;
+                    case 'punch':
+                        registerPunch();
+                        break;
+                    case 'load':
+                        loadTodayPunches();
+                        break;
+                    default:
+                        location.reload();
                 }
             }
         }
@@ -765,27 +963,34 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         }
 
-        // Mostrar mensagem de erro
-        function showError(message) {
+        // Funções de mensagem melhoradas
+        function showError(message, actionType = null) {
+            hideAllMessages();
             const errorElement = document.getElementById('errorMessage');
-            const successElement = document.getElementById('successMessage');
+            const errorText = document.getElementById('errorText');
+            const retryButton = document.getElementById('retryButton');
             
-            successElement.classList.add('hidden');
-            errorElement.textContent = message;
+            errorText.textContent = message;
             errorElement.classList.remove('hidden');
+            
+            if (actionType) {
+                lastFailedAction = actionType;
+                retryButton.classList.remove('hidden');
+            } else {
+                retryButton.classList.add('hidden');
+            }
             
             setTimeout(() => {
                 errorElement.classList.add('hidden');
-            }, 5000);
+            }, 8000);
         }
 
-        // Mostrar mensagem de sucesso
         function showSuccess(message) {
-            const errorElement = document.getElementById('errorMessage');
+            hideAllMessages();
             const successElement = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
             
-            errorElement.classList.add('hidden');
-            successElement.textContent = message;
+            successText.textContent = message;
             successElement.classList.remove('hidden');
             
             setTimeout(() => {
@@ -793,10 +998,44 @@
             }, 5000);
         }
 
+        function showWarning(message) {
+            hideAllMessages();
+            const warningElement = document.getElementById('warningMessage');
+            const warningText = document.getElementById('warningText');
+            
+            warningText.textContent = message;
+            warningElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                warningElement.classList.add('hidden');
+            }, 6000);
+        }
+
+        function showInfo(message) {
+            hideAllMessages();
+            const infoElement = document.getElementById('infoMessage');
+            const infoText = document.getElementById('infoText');
+            
+            infoText.textContent = message;
+            infoElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                infoElement.classList.add('hidden');
+            }, 4000);
+        }
+
+        function hideAllMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('warningMessage').classList.add('hidden');
+            document.getElementById('infoMessage').classList.add('hidden');
+        }
+
         // Inicializar aplicação
         document.addEventListener('DOMContentLoaded', () => {
             updateClock();
             setInterval(updateClock, 1000);
+            updateConnectionStatus();
             getCurrentLocation();
         });
     </script>

@@ -613,7 +613,9 @@
 
             try {
                 const today = new Date().toISOString().split('T')[0];
-                const snapshot = await db.collection('punches')
+                console.log('Carregando registros para:', currentUser.email, 'data:', today);
+                
+                const snapshot = await db.collection('pontos')
                     .where('userId', '==', currentUser.uid)
                     .where('date', '==', today)
                     .orderBy('timestamp', 'asc')
@@ -621,9 +623,12 @@
 
                 todayPunches = [];
                 snapshot.forEach(doc => {
-                    todayPunches.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    console.log('Registro encontrado:', data);
+                    todayPunches.push({ id: doc.id, ...data });
                 });
 
+                console.log('Total de registros carregados:', todayPunches.length);
                 updateUI();
             } catch (error) {
                 console.error('Erro ao carregar registros:', error);

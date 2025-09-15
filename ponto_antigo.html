@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Fácil - Sistema de Ponto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .greeting h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .clock-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .clock-icon {
+            font-size: 2.5em;
+            color: #4F46E5;
+            margin-bottom: 15px;
+        }
+
+        .clock-time {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .clock-date {
+            color: #666;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .location-info {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .location-coords {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .punch-button {
+            width: 100%;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .punch-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .punch-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .punch-button.loading {
+            background: #999;
+            position: relative;
+        }
+
+        .punch-button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .status-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .status-value.working {
+            color: #10B981;
+        }
+
+        .status-value.break {
+            color: #F59E0B;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .history-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .history-type.entrada {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .history-type.saida {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #DC2626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .success-message {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #10B981;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-message {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #F59E0B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-message {
+            background: #DBEAFE;
+            color: #1E40AF;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border-left: 4px solid #3B82F6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .retry-button {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .retry-button:hover {
+            background: #D97706;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .connection-status.offline {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .clock-time {
+                font-size: 2.2em;
+            }
+
+            .connection-status {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">🟢 Online</div>
+
+    <div class="container">
+        <div class="header">
+            <div class="greeting">
+                <h1 id="userGreeting">Olá, Usuário!</h1>
+                <p>Sistema de Controle de Ponto</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+
+        <div class="clock-card">
+            <div class="clock-icon">🕐</div>
+            <div class="clock-time" id="currentTime">--:--:--</div>
+            <div class="clock-date" id="currentDate">
+                📅 <span>--/--/----</span>
+            </div>
+            <div class="location-info">
+                <div class="location-status" id="locationStatus">
+                    📍 Obtendo localização...
+                </div>
+                <div class="location-coords" id="locationCoords"></div>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2 class="status-title">Registrar Ponto</h2>
+            
+            <div id="errorMessage" class="error-message hidden">
+                <span>❌</span>
+                <div>
+                    <div id="errorText"></div>
+                    <button class="retry-button hidden" id="retryButton" onclick="retryLastAction()">Tentar Novamente</button>
+                </div>
+            </div>
+            
+            <div id="successMessage" class="success-message hidden">
+                <span>✅</span>
+                <div id="successText"></div>
+            </div>
+
+            <div id="warningMessage" class="warning-message hidden">
+                <span>⚠️</span>
+                <div id="warningText"></div>
+            </div>
+
+            <div id="infoMessage" class="info-message hidden">
+                <span>ℹ️</span>
+                <div id="infoText"></div>
+            </div>
+            
+            <!-- Formulário de login (mostrado apenas se não autenticado) -->
+            <div id="loginForm" class="hidden">
+                <div style="margin-bottom: 15px;">
+                    <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                    <input type="password" id="loginPassword" placeholder="Senha" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <button onclick="quickLogin()" style="width: 100%; background: #4F46E5; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1em; margin-bottom: 10px; cursor: pointer;">
+                    Fazer Login
+                </button>
+                <p style="text-align: center; color: #666; font-size: 0.9em;">
+                    Não tem conta? <a href="https://pontofacil-webapp.netlify.app" style="color: #4F46E5;">Registre-se aqui</a>
+                </p>
+            </div>
+            
+            <!-- Botão de bater ponto (mostrado apenas se autenticado) -->
+            <div id="punchSection">
+                <button class="punch-button" id="punchButton" onclick="registerPunch()">
+                    🕐 Bater Ponto
+                </button>
+            </div>
+            
+            <div class="status-info">
+                <span class="status-label">Status Atual:</span>
+                <span class="status-value" id="currentStatus">Fora do expediente</span>
+            </div>
+            
+            <div class="status-info">
+                <span class="status-label">Último Registro:</span>
+                <span class="status-value" id="lastPunch">Nenhum registro hoje</span>
+            </div>
+            
+            <div class="status-info">
+                <span class="status-label">Horas Trabalhadas:</span>
+                <span class="status-value" id="workedHours">00:00</span>
+            </div>
+        </div>
+
+        <div class="history-card">
+            <h2 class="status-title">Histórico de Hoje</h2>
+            <div id="todayHistory">
+                <p style="color: #666; text-align: center; padding: 20px;">
+                    Carregando histórico...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUgRbcAkCTRjF4q_3_g8vVx2kuLdSfEQg",
+            authDomain: "pontofacil-f4766.firebaseapp.com",
+            projectId: "pontofacil-f4766",
+            storageBucket: "pontofacil-f4766.firebasestorage.app",
+            messagingSenderId: "160973674012",
+            appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+            measurementId: "G-Z5NGQVXY2V"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Variáveis globais
+        let currentUser = null;
+        let userLocation = null;
+        let todayPunches = [];
+        let lastFailedAction = null;
+        let isOnline = navigator.onLine;
+
+        // Monitorar conexão
+        window.addEventListener('online', () => {
+            isOnline = true;
+            updateConnectionStatus();
+            if (currentUser) {
+                showInfo('Conexão restaurada. Sincronizando dados...');
+                loadTodayPunches();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            updateConnectionStatus();
+            showWarning('Sem conexão com a internet. Algumas funcionalidades podem não funcionar.');
+        });
+
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            if (isOnline) {
+                statusElement.textContent = '🟢 Online';
+                statusElement.className = 'connection-status online';
+            } else {
+                statusElement.textContent = '🔴 Offline';
+                statusElement.className = 'connection-status offline';
+            }
+        }
+
+        // Verificar autenticação
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? user.email : 'No user');
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('userGreeting').textContent = `Olá, ${user.email.split('@')[0]}!`;
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('punchSection').classList.remove('hidden');
+                loadTodayPunches();
+                getCurrentLocation();
+            } else {
+                currentUser = null;
+                document.getElementById('userGreeting').textContent = 'Olá, Visitante!';
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('punchSection').classList.add('hidden');
+                todayPunches = [];
+                updateUI();
+            }
+        });
+
+        // Função de login rápido
+        async function quickLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError('Por favor, preencha email e senha');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
+                return;
+            }
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showSuccess('Login realizado com sucesso!');
+            } catch (error) {
+                console.error('Erro no login:', error);
+                let errorMessage = 'Erro no login';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'Usuário não encontrado';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Senha incorreta';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Erro de conexão. Verifique sua internet';
+                        break;
+                    default:
+                        errorMessage = 'Erro no login: ' + error.message;
+                }
+                
+                showError(errorMessage, 'login');
+            }
+        }
+
+        // Função de logout
+        function logout() {
+            if (!isOnline) {
+                showWarning('Sem conexão. O logout será feito localmente.');
+            }
+            
+            auth.signOut().then(() => {
+                showSuccess('Logout realizado com sucesso!');
+            }).catch((error) => {
+                console.error('Erro no logout:', error);
+                showError('Erro ao fazer logout, mas você foi desconectado localmente.');
+            });
+        }
+
+        // Atualizar relógio em tempo real
+        function updateClock() {
+            const now = new Date();
+            
+            const timeString = now.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+            
+            const dateString = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentDate').innerHTML = `📅 <span>${dateString}</span>`;
+        }
+
+        // Obter geolocalização
+        let locationRequested = false;
+        
+        function getCurrentLocation() {
+            if (locationRequested) return;
+            
+            if (navigator.geolocation) {
+                locationRequested = true;
+                document.getElementById('locationStatus').innerHTML = '📍 Obtendo localização...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date()
+                        };
+                        
+                        document.getElementById('locationStatus').innerHTML = '📍 Localização obtida';
+                        document.getElementById('locationCoords').textContent = 
+                            `Lat: ${userLocation.latitude.toFixed(6)}, Lng: ${userLocation.longitude.toFixed(6)}`;
+                        locationRequested = false;
+                    },
+                    (error) => {
+                        console.error('Erro ao obter localização:', error);
+                        let errorMessage = '';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Permissão de localização negada';
+                                showWarning('Localização negada. Você ainda pode registrar ponto, mas sem coordenadas GPS.');
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Localização indisponível';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Tempo limite excedido';
+                                break;
+                            default:
+                                errorMessage = 'Erro desconhecido';
+                                break;
+                        }
+                        
+                        document.getElementById('locationStatus').innerHTML = `📍 ${errorMessage}`;
+                        document.getElementById('locationCoords').innerHTML = 
+                            '<span style="color: #666; font-size: 0.8em;">Você pode registrar ponto sem GPS</span>';
+                        locationRequested = false;
+                    },
+                    {
+                        enableHighAccuracy: false,
+                        timeout: 15000,
+                        maximumAge: 600000
+                    }
+                );
+            } else {
+                document.getElementById('locationStatus').innerHTML = '📍 Geolocalização não suportada';
+                document.getElementById('locationCoords').innerHTML = 
+                    '<span style="color: #666; font-size: 0.8em;">Você pode registrar ponto sem GPS</span>';
+            }
+        }
+
+        // Registrar ponto
+        async function registerPunch() {
+            console.log('Tentando registrar ponto. Usuário:', currentUser ? currentUser.email : 'Não logado');
+            
+            if (!currentUser) {
+                showError('Usuário não autenticado');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Não é possível registrar ponto offline.', 'punch');
+                return;
+            }
+
+            const button = document.getElementById('punchButton');
+            button.disabled = true;
+            button.textContent = '⏳ Registrando...';
+            button.classList.add('loading');
+
+            try {
+                // Usar localização já obtida ou obter nova se necessário
+                let currentLocation = userLocation;
+                
+                if (!currentLocation || (new Date() - currentLocation.timestamp) > 600000) {
+                    try {
+                        currentLocation = await new Promise((resolve, reject) => {
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    (position) => {
+                                        resolve({
+                                            latitude: position.coords.latitude,
+                                            longitude: position.coords.longitude,
+                                            accuracy: position.coords.accuracy,
+                                            timestamp: new Date()
+                                        });
+                                    },
+                                    reject,
+                                    {
+                                        enableHighAccuracy: false,
+                                        timeout: 8000,
+                                        maximumAge: 300000
+                                    }
+                                );
+                            } else {
+                                reject(new Error('Geolocalização não suportada'));
+                            }
+                        });
+                        userLocation = currentLocation;
+                    } catch (locationError) {
+                        console.warn('Não foi possível obter localização, mas continuando com o registro:', locationError);
+                        currentLocation = {
+                            latitude: null,
+                            longitude: null,
+                            accuracy: null,
+                            timestamp: new Date(),
+                            error: 'Localização não disponível'
+                        };
+                    }
+                }
+
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toLocaleTimeString('pt-BR');
+                const punchType = todayPunches.length % 2 === 0 ? 'entrada' : 'saida';
+                
+                // Estrutura de dados mais simples - sem campos que causam problemas de índice
+                const punchData = {
+                    userId: currentUser.uid,
+                    email: currentUser.email,
+                    date: dateStr,
+                    time: timeStr,
+                    type: punchType,
+                    location: currentLocation || null,
+                    // Usar apenas um timestamp simples
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                console.log('Dados do ponto a serem salvos:', punchData);
+
+                // Salvar no Firestore
+                const docRef = await db.collection('pontos').add(punchData);
+                console.log('Ponto salvo com ID:', docRef.id);
+                
+                // Adicionar à lista local imediatamente para atualizar UI
+                const localPunch = {
+                    id: docRef.id,
+                    ...punchData,
+                    createdAt: { toDate: () => now } // Mock para compatibilidade
+                };
+                todayPunches.push(localPunch);
+                
+                showSuccess(`Ponto registrado com sucesso! (${punchType.charAt(0).toUpperCase() + punchType.slice(1)})`);
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao registrar ponto:', error);
+                let errorMessage = 'Erro ao registrar ponto';
+                
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Sem permissão para salvar dados. Verifique sua autenticação.';
+                } else if (error.code === 'unavailable') {
+                    errorMessage = 'Serviço temporariamente indisponível. Tente novamente.';
+                } else if (error.message.includes('network')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                } else {
+                    errorMessage = 'Erro ao registrar ponto: ' + error.message;
+                }
+                
+                showError(errorMessage, 'punch');
+                
+            } finally {
+                button.disabled = false;
+                button.textContent = '🕐 Bater Ponto';
+                button.classList.remove('loading');
+            }
+        }
+
+        // Carregar registros de hoje - VERSÃO COMPLETAMENTE SIMPLIFICADA
+        async function loadTodayPunches() {
+            if (!currentUser) return;
+
+            if (!isOnline) {
+                showWarning('Sem conexão. Não é possível carregar histórico.');
+                return;
+            }
+
+            try {
+                console.log('Carregando registros para:', currentUser.email);
+                
+                // CONSULTA MAIS SIMPLES POSSÍVEL - apenas por userId
+                const snapshot = await db.collection('pontos')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                const today = new Date().toISOString().split('T')[0];
+                todayPunches = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    // Filtrar por data localmente
+                    if (data.date === today) {
+                        todayPunches.push({ id: doc.id, ...data });
+                    }
+                });
+
+                // Ordenar localmente por time string
+                todayPunches.sort((a, b) => {
+                    // Comparar strings de tempo diretamente
+                    return a.time.localeCompare(b.time);
+                });
+
+                console.log('Total de registros carregados para hoje:', todayPunches.length);
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao carregar registros:', error);
+                showError('Erro ao carregar histórico. Os novos registros aparecerão normalmente.', 'load');
+                // Não falhar completamente - deixar a interface funcionar para novos registros
+                updateUI();
+            }
+        }
+
+        // Tentar novamente a última ação
+        function retryLastAction() {
+            if (lastFailedAction) {
+                switch (lastFailedAction) {
+                    case 'login':
+                        quickLogin();
+                        break;
+                    case 'punch':
+                        registerPunch();
+                        break;
+                    case 'load':
+                        loadTodayPunches();
+                        break;
+                    default:
+                        location.reload();
+                }
+            }
+        }
+
+        // Atualizar interface
+        function updateUI() {
+            updateStatus();
+            updateHistory();
+            calculateWorkedHours();
+        }
+
+        // Atualizar status atual
+        function updateStatus() {
+            const statusElement = document.getElementById('currentStatus');
+            const lastPunchElement = document.getElementById('lastPunch');
+            
+            console.log('Atualizando status. Total de registros hoje:', todayPunches.length);
+            
+            if (todayPunches.length === 0) {
+                statusElement.textContent = 'Fora do expediente';
+                statusElement.className = 'status-value';
+                lastPunchElement.textContent = 'Nenhum registro hoje';
+                console.log('Status: Fora do expediente (sem registros)');
+            } else {
+                const lastPunch = todayPunches[todayPunches.length - 1];
+                console.log('Último registro:', lastPunch.type, 'às', lastPunch.time);
+                
+                if (lastPunch.type === 'entrada') {
+                    statusElement.textContent = 'Trabalhando';
+                    statusElement.className = 'status-value working';
+                    console.log('Status atualizado para: Trabalhando');
+                } else {
+                    statusElement.textContent = 'Fora do expediente';
+                    statusElement.className = 'status-value';
+                    console.log('Status atualizado para: Fora do expediente');
+                }
+                lastPunchElement.textContent = `${lastPunch.type} às ${lastPunch.time}`;
+            }
+        }
+
+        // Atualizar histórico
+        function updateHistory() {
+            const historyElement = document.getElementById('todayHistory');
+            
+            if (todayPunches.length === 0) {
+                historyElement.innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 20px;">
+                        Nenhum registro encontrado para hoje
+                    </p>
+                `;
+                return;
+            }
+
+            const historyHTML = todayPunches.map(punch => `
+                <div class="history-item">
+                    <span class="history-time">${punch.time}</span>
+                    <span class="history-type ${punch.type.toLowerCase()}">${punch.type}</span>
+                </div>
+            `).join('');
+
+            historyElement.innerHTML = historyHTML;
+        }
+
+        // Calcular horas trabalhadas
+        function calculateWorkedHours() {
+            let totalMinutes = 0;
+            
+            for (let i = 0; i < todayPunches.length; i += 2) {
+                const entrada = todayPunches[i];
+                const saida = todayPunches[i + 1];
+                
+                if (entrada && saida && entrada.type === 'entrada' && saida.type === 'saida') {
+                    // Usar strings de tempo para calcular diferença
+                    const entradaTime = new Date(`${entrada.date} ${entrada.time}`);
+                    const saidaTime = new Date(`${saida.date} ${saida.time}`);
+                    
+                    if (!isNaN(entradaTime) && !isNaN(saidaTime)) {
+                        const diffMinutes = (saidaTime - entradaTime) / (1000 * 60);
+                        totalMinutes += diffMinutes;
+                    }
+                }
+            }
+            
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.floor(totalMinutes % 60);
+            
+            document.getElementById('workedHours').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        // Funções de mensagem melhoradas
+        function showError(message, actionType = null) {
+            hideAllMessages();
+            const errorElement = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const retryButton = document.getElementById('retryButton');
+            
+            errorText.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            if (actionType) {
+                lastFailedAction = actionType;
+                retryButton.classList.remove('hidden');
+            } else {
+                retryButton.classList.add('hidden');
+            }
+            
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 8000);
+        }
+
+        function showSuccess(message) {
+            hideAllMessages();
+            const successElement = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            successText.textContent = message;
+            successElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        function showWarning(message) {
+            hideAllMessages();
+            const warningElement = document.getElementById('warningMessage');
+            const warningText = document.getElementById('warningText');
+            
+            warningText.textContent = message;
+            warningElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                warningElement.classList.add('hidden');
+            }, 6000);
+        }
+
+        function showInfo(message) {
+            hideAllMessages();
+            const infoElement = document.getElementById('infoMessage');
+            const infoText = document.getElementById('infoText');
+            
+            infoText.textContent = message;
+            infoElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                infoElement.classList.add('hidden');
+            }, 4000);
+        }
+
+        function hideAllMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('warningMessage').classList.add('hidden');
+            document.getElementById('infoMessage').classList.add('hidden');
+        }
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            updateConnectionStatus();
+            getCurrentLocation();
+        });
+    </script>
+</body>
+</html>

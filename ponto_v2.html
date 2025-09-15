@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Fácil - Sistema de Ponto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .greeting h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Relógio */
+        .clock-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .clock-icon {
+            font-size: 2.5em;
+            color: #4F46E5;
+            margin-bottom: 15px;
+        }
+
+        .clock-time {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .clock-date {
+            color: #666;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Status do Dia */
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .status-time {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-family: 'Courier New', monospace;
+        }
+
+        .status-time.delay {
+            color: #DC2626;
+        }
+
+        .status-time.empty {
+            color: #999;
+        }
+
+        /* Botões de Ação */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .action-button {
+            background: #9CA3AF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 20px 15px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-height: 80px;
+        }
+
+        .action-button.active {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-button.used {
+            background: #6B7280;
+            cursor: not-allowed;
+        }
+
+        .action-button:hover:not(.used):not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .action-button.loading {
+            position: relative;
+        }
+
+        .action-button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button-icon {
+            font-size: 1.5em;
+        }
+
+        .button-text {
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        /* Informações da Empresa */
+        .company-info {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .company-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .company-info .highlight {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Mensagens */
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 4px solid;
+        }
+
+        .message.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border-left-color: #DC2626;
+        }
+
+        .message.success {
+            background: #D1FAE5;
+            color: #065F46;
+            border-left-color: #10B981;
+        }
+
+        .message.warning {
+            background: #FEF3C7;
+            color: #92400E;
+            border-left-color: #F59E0B;
+        }
+
+        .message.info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border-left-color: #3B82F6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .retry-button {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .retry-button:hover {
+            background: #D97706;
+        }
+
+        /* Indicador de Conexão */
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .connection-status.offline {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* Login Form */
+        .login-form {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .login-form button {
+            width: 100%;
+            background: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1em;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background: #4338CA;
+        }
+
+        .login-form p {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .login-form a {
+            color: #4F46E5;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .clock-time {
+                font-size: 2.2em;
+            }
+
+            .connection-status {
+                top: 10px;
+                right: 10px;
+            }
+
+            .actions-grid {
+                gap: 10px;
+            }
+
+            .action-button {
+                padding: 15px 10px;
+                min-height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">🟢 Online</div>
+
+    <div class="container">
+        <div class="header">
+            <div class="greeting">
+                <h1 id="userGreeting">Olá, Usuário!</h1>
+                <p>Sistema de Controle de Ponto</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Relógio -->
+        <div class="clock-card">
+            <div class="clock-icon">🕐</div>
+            <div class="clock-time" id="currentTime">--:--:--</div>
+            <div class="clock-date" id="currentDate">
+                📅 <span>--/--/----</span>
+            </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="errorMessage" class="message error hidden">
+            <span>❌</span>
+            <div>
+                <div id="errorText"></div>
+                <button class="retry-button hidden" id="retryButton" onclick="retryLastAction()">Tentar Novamente</button>
+            </div>
+        </div>
+        
+        <div id="successMessage" class="message success hidden">
+            <span>✅</span>
+            <div id="successText"></div>
+        </div>
+
+        <div id="warningMessage" class="message warning hidden">
+            <span>⚠️</span>
+            <div id="warningText"></div>
+        </div>
+
+        <div id="infoMessage" class="message info hidden">
+            <span>ℹ️</span>
+            <div id="infoText"></div>
+        </div>
+
+        <!-- Formulário de Login -->
+        <div id="loginForm" class="login-form hidden">
+            <h2 class="status-title">Fazer Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email" />
+            <input type="password" id="loginPassword" placeholder="Senha" />
+            <button onclick="quickLogin()">Entrar</button>
+            <p>Não tem conta? <a href="https://pontofacil-webapp.netlify.app">Registre-se aqui</a></p>
+        </div>
+
+        <!-- Status do Dia -->
+        <div id="statusSection" class="hidden">
+            <div class="status-card">
+                <h2 class="status-title">Status do Dia</h2>
+                
+                <div class="status-item">
+                    <span class="status-label">Chegada:</span>
+                    <span class="status-time empty" id="arrivalTime">--:--</span>
+                </div>
+                
+                <div class="status-item">
+                    <span class="status-label">Início Almoço:</span>
+                    <span class="status-time empty" id="lunchStartTime">--:--</span>
+                </div>
+                
+                <div class="status-item">
+                    <span class="status-label">Fim Almoço:</span>
+                    <span class="status-time empty" id="lunchEndTime">--:--</span>
+                </div>
+                
+                <div class="status-item">
+                    <span class="status-label">Saída:</span>
+                    <span class="status-time empty" id="departureTime">--:--</span>
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="actions-grid">
+                <button class="action-button active" id="arrivalBtn" onclick="registerPunch('arrival')">
+                    <span class="button-icon">🏠</span>
+                    <span class="button-text">Marcar Chegada</span>
+                </button>
+                
+                <button class="action-button" id="lunchStartBtn" onclick="registerPunch('lunchStart')" disabled>
+                    <span class="button-icon">☕</span>
+                    <span class="button-text">Início Almoço</span>
+                </button>
+                
+                <button class="action-button" id="lunchEndBtn" onclick="registerPunch('lunchEnd')" disabled>
+                    <span class="button-icon">☕</span>
+                    <span class="button-text">Fim Almoço</span>
+                </button>
+                
+                <button class="action-button" id="departureBtn" onclick="registerPunch('departure')" disabled>
+                    <span class="button-icon">🚪</span>
+                    <span class="button-text">Marcar Saída</span>
+                </button>
+            </div>
+
+            <!-- Informações da Empresa -->
+            <div class="company-info">
+                <p><span class="highlight">Horário padrão:</span> <span id="workingHours">08:00 às 17:00</span></p>
+                <p><span class="highlight">Almoço:</span> <span id="lunchHours">12:00 às 13:00 (máx. 1h)</span></p>
+                <p>Atrasos são calculados automaticamente</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUgRbcAkCTRjF4q_3_g8vVx2kuLdSfEQg",
+            authDomain: "pontofacil-f4766.firebaseapp.com",
+            projectId: "pontofacil-f4766",
+            storageBucket: "pontofacil-f4766.firebasestorage.app",
+            messagingSenderId: "160973674012",
+            appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+            measurementId: "G-Z5NGQVXY2V"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Variáveis globais
+        let currentUser = null;
+        let userLocation = null;
+        let todayRecord = null;
+        let lastFailedAction = null;
+        let isOnline = navigator.onLine;
+
+        // Configurações padrão da empresa (depois virá do banco)
+        const companySettings = {
+            workingHours: {
+                start: "08:00",
+                end: "17:00"
+            },
+            lunchTime: {
+                start: "12:00",
+                end: "13:00",
+                maxDuration: 60 // minutos
+            },
+            tolerance: {
+                arrival: 15, // minutos de tolerância
+                lunch: 5     // minutos de tolerância
+            }
+        };
+
+        // Monitorar conexão
+        window.addEventListener('online', () => {
+            isOnline = true;
+            updateConnectionStatus();
+            if (currentUser) {
+                showInfo('Conexão restaurada. Sincronizando dados...');
+                loadTodayRecord();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            updateConnectionStatus();
+            showWarning('Sem conexão com a internet. Algumas funcionalidades podem não funcionar.');
+        });
+
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            if (isOnline) {
+                statusElement.textContent = '🟢 Online';
+                statusElement.className = 'connection-status online';
+            } else {
+                statusElement.textContent = '🔴 Offline';
+                statusElement.className = 'connection-status offline';
+            }
+        }
+
+        // Verificar autenticação
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? user.email : 'No user');
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('userGreeting').textContent = `Olá, ${user.email.split('@')[0]}!`;
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('statusSection').classList.remove('hidden');
+                loadTodayRecord();
+                getCurrentLocation();
+            } else {
+                currentUser = null;
+                document.getElementById('userGreeting').textContent = 'Olá, Visitante!';
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('statusSection').classList.add('hidden');
+                todayRecord = null;
+                updateUI();
+            }
+        });
+
+        // Função de login
+        async function quickLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError('Por favor, preencha email e senha');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
+                return;
+            }
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showSuccess('Login realizado com sucesso!');
+            } catch (error) {
+                console.error('Erro no login:', error);
+                let errorMessage = 'Erro no login';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'Usuário não encontrado';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Senha incorreta';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Erro de conexão. Verifique sua internet';
+                        break;
+                    default:
+                        errorMessage = 'Erro no login: ' + error.message;
+                }
+                
+                showError(errorMessage, 'login');
+            }
+        }
+
+        // Função de logout
+        function logout() {
+            if (!isOnline) {
+                showWarning('Sem conexão. O logout será feito localmente.');
+            }
+            
+            auth.signOut().then(() => {
+                showSuccess('Logout realizado com sucesso!');
+            }).catch((error) => {
+                console.error('Erro no logout:', error);
+                showError('Erro ao fazer logout, mas você foi desconectado localmente.');
+            });
+        }
+
+        // Atualizar relógio
+        function updateClock() {
+            const now = new Date();
+            
+            const timeString = now.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+            
+            const dateString = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentDate').innerHTML = `📅 <span>${dateString}</span>`;
+        }
+
+        // Obter geolocalização
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date()
+                        };
+                        console.log('Localização obtida:', userLocation);
+                    },
+                    (error) => {
+                        console.warn('Erro ao obter localização:', error);
+                        userLocation = null;
+                    },
+                    {
+                        enableHighAccuracy: false,
+                        timeout: 15000,
+                        maximumAge: 600000
+                    }
+                );
+            }
+        }
+
+        // Carregar registro do dia
+        async function loadTodayRecord() {
+            if (!currentUser || !isOnline) return;
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                console.log('Carregando registro para:', currentUser.email, 'data:', today);
+                
+                const snapshot = await db.collection('daily_records')
+                    .where('userId', '==', currentUser.uid)
+                    .where('date', '==', today)
+                    .limit(1)
+                    .get();
+
+                if (!snapshot.empty) {
+                    todayRecord = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+                    console.log('Registro encontrado:', todayRecord);
+                } else {
+                    todayRecord = null;
+                    console.log('Nenhum registro encontrado para hoje');
+                }
+                
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao carregar registro:', error);
+                showError('Erro ao carregar dados do dia. Novos registros funcionarão normalmente.', 'load');
+                updateUI();
+            }
+        }
+
+        // Registrar ponto
+        async function registerPunch(type) {
+            console.log('Registrando ponto:', type);
+            
+            if (!currentUser) {
+                showError('Usuário não autenticado');
+                return;
+            }
+
+            if (!isOnline) {
+                showError('Sem conexão com a internet. Não é possível registrar ponto offline.', 'punch');
+                return;
+            }
+
+            const button = document.getElementById(type + 'Btn');
+            button.disabled = true;
+            button.classList.add('loading');
+
+            try {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = now.toISOString().split('T')[0];
+
+                // Calcular atraso se necessário
+                let delay = 0;
+                if (type === 'arrival') {
+                    delay = calculateArrivalDelay(timeStr);
+                } else if (type === 'lunchEnd' && todayRecord?.punches?.lunchStart) {
+                    delay = calculateLunchOvertime(todayRecord.punches.lunchStart.time, timeStr);
+                }
+
+                const punchData = {
+                    time: timeStr,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    location: userLocation || null,
+                    delay: delay
+                };
+
+                // Criar ou atualizar registro do dia
+                if (!todayRecord) {
+                    // Criar novo registro
+                    const newRecord = {
+                        userId: currentUser.uid,
+                        email: currentUser.email,
+                        date: dateStr,
+                        punches: {
+                            [type]: punchData
+                        },
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    const docRef = await db.collection('daily_records').add(newRecord);
+                    todayRecord = { id: docRef.id, ...newRecord };
+                    console.log('Novo registro criado:', docRef.id);
+                } else {
+                    // Atualizar registro existente
+                    await db.collection('daily_records').doc(todayRecord.id).update({
+                        [`punches.${type}`]: punchData
+                    });
+                    
+                    if (!todayRecord.punches) todayRecord.punches = {};
+                    todayRecord.punches[type] = punchData;
+                    console.log('Registro atualizado:', todayRecord.id);
+                }
+
+                const typeNames = {
+                    arrival: 'Chegada',
+                    lunchStart: 'Início do Almoço',
+                    lunchEnd: 'Fim do Almoço',
+                    departure: 'Saída'
+                };
+
+                let message = `${typeNames[type]} registrada com sucesso!`;
+                if (delay > 0) {
+                    message += ` (Atraso: ${delay} min)`;
+                }
+
+                showSuccess(message);
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao registrar ponto:', error);
+                let errorMessage = 'Erro ao registrar ponto';
+                
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Sem permissão para salvar dados. Verifique sua autenticação.';
+                } else if (error.code === 'unavailable') {
+                    errorMessage = 'Serviço temporariamente indisponível. Tente novamente.';
+                } else if (error.message.includes('network')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                } else {
+                    errorMessage = 'Erro ao registrar ponto: ' + error.message;
+                }
+                
+                showError(errorMessage, 'punch');
+                
+            } finally {
+                button.disabled = false;
+                button.classList.remove('loading');
+            }
+        }
+
+        // Calcular atraso na chegada
+        function calculateArrivalDelay(arrivalTime) {
+            const [arrivalHour, arrivalMinute] = arrivalTime.split(':').map(Number);
+            const [expectedHour, expectedMinute] = companySettings.workingHours.start.split(':').map(Number);
+            
+            const arrivalMinutes = arrivalHour * 60 + arrivalMinute;
+            const expectedMinutes = expectedHour * 60 + expectedMinute;
+            
+            const delay = Math.max(0, arrivalMinutes - expectedMinutes - companySettings.tolerance.arrival);
+            return delay;
+        }
+
+        // Calcular tempo excedido no almoço
+        function calculateLunchOvertime(lunchStartTime, lunchEndTime) {
+            const [startHour, startMinute] = lunchStartTime.split(':').map(Number);
+            const [endHour, endMinute] = lunchEndTime.split(':').map(Number);
+            
+            const startMinutes = startHour * 60 + startMinute;
+            const endMinutes = endHour * 60 + endMinute;
+            
+            const lunchDuration = endMinutes - startMinutes;
+            const overtime = Math.max(0, lunchDuration - companySettings.lunchTime.maxDuration - companySettings.tolerance.lunch);
+            
+            return overtime;
+        }
+
+        // Atualizar interface
+        function updateUI() {
+            updateStatusDisplay();
+            updateButtonStates();
+        }
+
+        // Atualizar exibição de status
+        function updateStatusDisplay() {
+            const elements = {
+                arrival: document.getElementById('arrivalTime'),
+                lunchStart: document.getElementById('lunchStartTime'),
+                lunchEnd: document.getElementById('lunchEndTime'),
+                departure: document.getElementById('departureTime')
+            };
+
+            // Limpar todos os status
+            Object.values(elements).forEach(el => {
+                el.textContent = '--:--';
+                el.className = 'status-time empty';
+            });
+
+            if (todayRecord?.punches) {
+                Object.entries(todayRecord.punches).forEach(([type, data]) => {
+                    const element = elements[type];
+                    if (element && data.time) {
+                        element.textContent = data.time;
+                        element.className = data.delay > 0 ? 'status-time delay' : 'status-time';
+                    }
+                });
+            }
+        }
+
+        // Atualizar estados dos botões
+        function updateButtonStates() {
+            const buttons = {
+                arrival: document.getElementById('arrivalBtn'),
+                lunchStart: document.getElementById('lunchStartBtn'),
+                lunchEnd: document.getElementById('lunchEndBtn'),
+                departure: document.getElementById('departureBtn')
+            };
+
+            // Resetar todos os botões
+            Object.values(buttons).forEach(btn => {
+                btn.disabled = true;
+                btn.className = 'action-button';
+            });
+
+            if (!todayRecord?.punches) {
+                // Primeiro registro do dia - apenas chegada ativa
+                buttons.arrival.disabled = false;
+                buttons.arrival.className = 'action-button active';
+                return;
+            }
+
+            const punches = todayRecord.punches;
+
+            if (!punches.arrival) {
+                // Ainda não marcou chegada
+                buttons.arrival.disabled = false;
+                buttons.arrival.className = 'action-button active';
+            } else if (!punches.lunchStart) {
+                // Marcou chegada, pode marcar início do almoço
+                buttons.arrival.className = 'action-button used';
+                buttons.lunchStart.disabled = false;
+                buttons.lunchStart.className = 'action-button active';
+            } else if (!punches.lunchEnd) {
+                // Marcou início do almoço, pode marcar fim do almoço
+                buttons.arrival.className = 'action-button used';
+                buttons.lunchStart.className = 'action-button used';
+                buttons.lunchEnd.disabled = false;
+                buttons.lunchEnd.className = 'action-button active';
+            } else if (!punches.departure) {
+                // Marcou fim do almoço, pode marcar saída
+                buttons.arrival.className = 'action-button used';
+                buttons.lunchStart.className = 'action-button used';
+                buttons.lunchEnd.className = 'action-button used';
+                buttons.departure.disabled = false;
+                buttons.departure.className = 'action-button active';
+            } else {
+                // Todos os registros feitos
+                Object.values(buttons).forEach(btn => {
+                    btn.className = 'action-button used';
+                });
+            }
+        }
+
+        // Tentar novamente a última ação
+        function retryLastAction() {
+            if (lastFailedAction) {
+                switch (lastFailedAction) {
+                    case 'login':
+                        quickLogin();
+                        break;
+                    case 'punch':
+                        // Não podemos repetir punch sem saber qual tipo
+                        location.reload();
+                        break;
+                    case 'load':
+                        loadTodayRecord();
+                        break;
+                    default:
+                        location.reload();
+                }
+            }
+        }
+
+        // Funções de mensagem
+        function showError(message, actionType = null) {
+            hideAllMessages();
+            const errorElement = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const retryButton = document.getElementById('retryButton');
+            
+            errorText.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            if (actionType) {
+                lastFailedAction = actionType;
+                retryButton.classList.remove('hidden');
+            } else {
+                retryButton.classList.add('hidden');
+            }
+            
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 8000);
+        }
+
+        function showSuccess(message) {
+            hideAllMessages();
+            const successElement = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            successText.textContent = message;
+            successElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        function showWarning(message) {
+            hideAllMessages();
+            const warningElement = document.getElementById('warningMessage');
+            const warningText = document.getElementById('warningText');
+            
+            warningText.textContent = message;
+            warningElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                warningElement.classList.add('hidden');
+            }, 6000);
+        }
+
+        function showInfo(message) {
+            hideAllMessages();
+            const infoElement = document.getElementById('infoMessage');
+            const infoText = document.getElementById('infoText');
+            
+            infoText.textContent = message;
+            infoElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                infoElement.classList.add('hidden');
+            }, 4000);
+        }
+
+        function hideAllMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('warningMessage').classList.add('hidden');
+            document.getElementById('infoMessage').classList.add('hidden');
+        }
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            updateConnectionStatus();
+            getCurrentLocation();
+        });
+    </script>
+</body>
+</html>

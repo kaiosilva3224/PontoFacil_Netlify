@@ -867,18 +867,25 @@
             const statusElement = document.getElementById('currentStatus');
             const lastPunchElement = document.getElementById('lastPunch');
             
+            console.log('Atualizando status. Total de registros hoje:', todayPunches.length);
+            
             if (todayPunches.length === 0) {
                 statusElement.textContent = 'Fora do expediente';
                 statusElement.className = 'status-value';
                 lastPunchElement.textContent = 'Nenhum registro hoje';
+                console.log('Status: Fora do expediente (sem registros)');
             } else {
                 const lastPunch = todayPunches[todayPunches.length - 1];
+                console.log('Último registro:', lastPunch.type, 'às', lastPunch.time);
+                
                 if (lastPunch.type === 'entrada') {
                     statusElement.textContent = 'Trabalhando';
                     statusElement.className = 'status-value working';
+                    console.log('Status atualizado para: Trabalhando');
                 } else {
                     statusElement.textContent = 'Fora do expediente';
                     statusElement.className = 'status-value';
+                    console.log('Status atualizado para: Fora do expediente');
                 }
                 lastPunchElement.textContent = `${lastPunch.type} às ${lastPunch.time}`;
             }

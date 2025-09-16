@@ -1,15 +1,9 @@
 [build]
   publish = "."
 
-# Redirects para subdomínios específicos (HTTP e HTTPS)
+# Redirects para subdomínios específicos (HTTPS)
 [[redirects]]
   from = "https://admin.pontofacil.app.br/*"
-  to = "/admin.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "http://admin.pontofacil.app.br/*"
   to = "/admin.html"
   status = 200
   force = true
@@ -21,14 +15,21 @@
   force = true
 
 [[redirects]]
-  from = "http://app.pontofacil.app.br/*"
-  to = "/empresa.html"
+  from = "https://ponto.pontofacil.app.br/*"
+  to = "/ponto.html"
+  status = 200
+  force = true
+
+# Redirects para subdomínios específicos (HTTP)
+[[redirects]]
+  from = "http://admin.pontofacil.app.br/*"
+  to = "/admin.html"
   status = 200
   force = true
 
 [[redirects]]
-  from = "https://ponto.pontofacil.app.br/*"
-  to = "/ponto.html"
+  from = "http://app.pontofacil.app.br/*"
+  to = "/empresa.html"
   status = 200
   force = true
 
@@ -38,32 +39,28 @@
   status = 200
   force = true
 
-# Redirects para domínio principal (HTTP e HTTPS)
+# Redirects apenas para a raiz do domínio principal (sem /*)
 [[redirects]]
-  from = "https://www.pontofacil.app.br/*"
+  from = "https://pontofacil.app.br"
   to = "/index.html"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "http://www.pontofacil.app.br/*"
+  from = "http://pontofacil.app.br"
   to = "/index.html"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "https://pontofacil.app.br/*"
+  from = "https://www.pontofacil.app.br"
   to = "/index.html"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "http://pontofacil.app.br/*"
+  from = "http://www.pontofacil.app.br"
   to = "/index.html"
   status = 200
-  force = true
 
-# Fallback para URLs diretas no domínio Netlify
+# Redirects para URLs curtas
 [[redirects]]
   from = "/admin"
   to = "/admin.html"
@@ -85,9 +82,3 @@
   [headers.values]
     Permissions-Policy = "geolocation=(self)"
     Feature-Policy = "geolocation 'self'"
-
-# SPA fallback (deve ser o último)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

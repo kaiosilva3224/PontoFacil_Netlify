@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponto Fácil - Painel Master Admin</title>
+    <title>PontoFácil - Painel Administrativo</title>
     <style>
-        /* Variáveis CSS */
         :root {
             --primary-color: #4F46E5;
             --secondary-color: #10B981;
-            --text-color: #333;
-            --bg-color: #f4f7f6;
-            --card-bg: #fff;
-            --border-radius: 8px;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --success-color: #10B981;
+            --text-color: #1F2937;
+            --text-light: #6B7280;
+            --bg-color: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        /* Reset básico */
         * {
             margin: 0;
             padding: 0;
@@ -24,380 +28,1112 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
-        /* Layout Geral */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        /* Layout Principal */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
         }
 
-        /* Cabeçalho */
-        header {
-            background: linear-gradient(135deg, var(--primary-color), #6a5acd);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #3730A3 100%);
             color: white;
-            padding: 20px 0;
-            text-align: center;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
 
-        header .hero {
-            padding: 50px 20px;
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
 
-        header h1 {
-            font-size: 2.8em;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .header-title p {
+            color: var(--text-light);
         }
 
-        header p {
-            font-size: 1.2em;
-            max-width: 700px;
-            margin: 0 auto 30px;
+        .header-actions {
+            display: flex;
+            gap: 1rem;
         }
 
-        /* Navegação */
-        nav {
+        /* Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 20px;
+            margin-bottom: 1rem;
         }
 
-        nav .logo {
-            font-size: 1.8em;
-            font-weight: bold;
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        nav ul {
-            list-style: none;
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
         }
 
-        nav ul li {
-            margin-left: 25px;
+        .stat-icon.primary {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
         }
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
+        .stat-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .stat-icon.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.3s ease;
         }
 
-        nav ul li a:hover {
-            color: var(--secondary-color);
+        .stat-change.positive {
+            color: var(--success-color);
         }
 
-        /* Botões */
-        .btn-primary, .btn-secondary {
-            display: inline-block;
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-color);
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table tr:hover {
+            background: var(--bg-color);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-badge.inactive {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-light);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
             border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
             cursor: pointer;
-            font-size: 1em;
+            transition: all 0.2s;
+            font-size: 0.875rem;
         }
 
         .btn-primary {
-            background-color: var(--secondary-color);
+            background: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #0e9f6e;
-            transform: translateY(-2px);
+            background: #3730A3;
         }
 
         .btn-secondary {
-            background-color: var(--card-bg);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
+            background: var(--border-color);
         }
 
-        /* Seções */
-        section {
-            padding: 60px 20px;
-            text-align: center;
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
         }
 
-        section h2 {
-            font-size: 2.5em;
-            margin-bottom: 40px;
-            color: var(--primary-color);
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        /* Seção de Funcionalidades */
-        .features .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .features .feature-card {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            text-align: left;
-            transition: transform 0.3s ease;
-        }
-
-        .features .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .features .feature-card h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-
-        /* Seção de Preços */
-        .pricing {
-            background-color: #eef2f1;
-        }
-
-        .pricing .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .pricing .price-card {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .pricing .price-card.featured {
-            border-color: var(--primary-color);
-            transform: scale(1.03);
-        }
-
-        .pricing .price-card h3 {
-            font-size: 2em;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .pricing .price-card .price {
-            font-size: 3em;
-            font-weight: bold;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-        }
-
-        .pricing .price-card .price span {
-            font-size: 0.5em;
-            font-weight: normal;
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
             color: var(--text-color);
         }
 
-        .pricing .price-card ul {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .pricing .price-card ul li {
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        /* Seção de Contato */
-        .contact form {
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .contact form input, .contact form textarea {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 1em;
+        .form-input {
             width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
         }
 
-        .contact form textarea {
-            min-height: 120px;
-            resize: vertical;
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
-        /* Rodapé */
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 0.9em;
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Responsividade */
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2em;
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
             }
 
-            nav {
-                flex-direction: column;
-                padding-top: 20px;
+            .sidebar.open {
+                transform: translateX(0);
             }
 
-            nav ul {
-                margin-top: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
+            .main-content {
+                margin-left: 0;
             }
 
-            nav ul li {
-                margin: 5px 10px;
-            }
-
-            .features .feature-grid, .pricing .pricing-grid {
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
 
-            .pricing .price-card.featured {
-                transform: scale(1.02);
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
             }
         }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">🕐 Ponto Fácil - Admin</div>
-            <ul>
-                <li><a href="#dashboard">Dashboard</a></li>
-                <li><a href="#empresas">Empresas</a></li>
-                <li><a href="#relatorios">Relatórios</a></li>
-                <li><a href="#" id="logout-button">Sair</a></li>
-            </ul>
-        </nav>
-        <div class="hero">
-            <h1>Bem-vindo ao Painel Master Admin</h1>
-            <p>Gerencie todas as empresas clientes do Ponto Fácil em um só lugar.</p>
-        </div>
-    </header>
-
-    <main>
-        <section id="dashboard" class="features">
-            <h2>Dashboard Administrativo</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3>Empresas Cadastradas</h3>
-                    <p>Visualize e gerencie todas as empresas.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Planos e Pagamentos</h3>
-                    <p>Controle os planos e pagamentos de cada cliente.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Relatórios Consolidados</h3>
-                    <p>Acesse relatórios gerais do sistema.</p>
-                </div>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🎯 PontoFácil</h1>
+                <p>Painel Administrativo</p>
             </div>
-        </section>
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#empresas" class="nav-link" data-section="empresas">
+                        <i class="fas fa-building"></i>
+                        Empresas
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#financeiro" class="nav-link" data-section="financeiro">
+                        <i class="fas fa-dollar-sign"></i>
+                        Financeiro
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#usuarios" class="nav-link" data-section="usuarios">
+                        <i class="fas fa-users"></i>
+                        Usuários
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#relatorios" class="nav-link" data-section="relatorios">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#configuracoes" class="nav-link" data-section="configuracoes">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                </div>
+                <div class="nav-item" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </nav>
+        </aside>
 
-        <section id="empresas" class="pricing">
-            <h2>Gestão de Empresas</h2>
-            <p>Aqui você pode cadastrar, editar e visualizar as empresas clientes.</p>
-            <!-- Conteúdo de gestão de empresas -->
-        </section>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section-wrapper">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Dashboard</h1>
+                        <p>Visão geral do seu negócio</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                    </div>
+                </div>
 
-        <section id="relatorios" class="contact">
-            <h2>Relatórios do Sistema</h2>
-            <p>Acompanhe o desempenho geral do Ponto Fácil.</p>
-            <!-- Conteúdo de relatórios -->
-        </section>
-    </main>
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total de Empresas</span>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="total-empresas">0</div>
+                        <div class="stat-change positive">+12% este mês</div>
+                    </div>
 
-    <footer>
-        <p>&copy; 2025 Ponto Fácil. Todos os direitos reservados.</p>
-    </footer>
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <span class="stat-title">Receita Mensal</span>
+                            <div class="stat-icon success">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="receita-mensal">R$ 0</div>
+                        <div class="stat-change positive">+8% este mês</div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <span class="stat-title">Pagamentos Pendentes</span>
+                            <div class="stat-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="pagamentos-pendentes">0</div>
+                        <div class="stat-change negative">3 em atraso</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Usuários Ativos</span>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="usuarios-ativos">0</div>
+                        <div class="stat-change positive">+15% este mês</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Atividade Recente</h2>
+                        <button class="btn btn-secondary btn-sm">Ver Todas</button>
+                    </div>
+                    <div class="section-content">
+                        <div id="recent-activity">
+                            <p class="text-center" style="color: var(--text-light); padding: 2rem;">
+                                Carregando atividades...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Empresas Section -->
+            <section id="empresas-section" class="content-section-wrapper hidden">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Gestão de Empresas</h1>
+                        <p>Gerencie todas as empresas clientes</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openAddEmpresaModal()">
+                            <i class="fas fa-plus"></i>
+                            Nova Empresa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Lista de Empresas</h2>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="text" placeholder="Buscar empresa..." class="form-input" style="width: 250px;" id="search-empresas">
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-filter"></i>
+                                Filtros
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Plano</th>
+                                        <th>Funcionários</th>
+                                        <th>Status</th>
+                                        <th>Último Pagamento</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="empresas-table">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                                            Carregando empresas...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Financeiro Section -->
+            <section id="financeiro-section" class="content-section-wrapper hidden">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Controle Financeiro</h1>
+                        <p>Acompanhe pagamentos e receitas</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Novo Pagamento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Financial Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <span class="stat-title">Receita Total</span>
+                            <div class="stat-icon success">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">R$ 45.230</div>
+                        <div class="stat-change positive">+18% este mês</div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <span class="stat-title">Em Atraso</span>
+                            <div class="stat-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">R$ 2.450</div>
+                        <div class="stat-change negative">5 empresas</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Próximos Vencimentos</span>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-change">Próximos 7 dias</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Pagamentos Recentes</h2>
+                        <div style="display: flex; gap: 1rem;">
+                            <select class="form-input" style="width: 150px;">
+                                <option>Todos</option>
+                                <option>Pagos</option>
+                                <option>Pendentes</option>
+                                <option>Em Atraso</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Valor</th>
+                                        <th>Vencimento</th>
+                                        <th>Status</th>
+                                        <th>Método</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pagamentos-table">
+                                    <!-- Dados serão carregados via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Outras seções serão implementadas conforme necessário -->
+            <section id="usuarios-section" class="content-section-wrapper hidden">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Gestão de Usuários</h1>
+                        <p>Administre contas e permissões</p>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <div class="section-content">
+                        <p style="text-align: center; color: var(--text-light); padding: 3rem;">
+                            Seção em desenvolvimento...
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="relatorios-section" class="content-section-wrapper hidden">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Relatórios</h1>
+                        <p>Análises e métricas detalhadas</p>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <div class="section-content">
+                        <p style="text-align: center; color: var(--text-light); padding: 3rem;">
+                            Seção em desenvolvimento...
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="configuracoes-section" class="content-section-wrapper hidden">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h1>Configurações</h1>
+                        <p>Configurações do sistema</p>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <div class="section-content">
+                        <p style="text-align: center; color: var(--text-light); padding: 3rem;">
+                            Seção em desenvolvimento...
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Nova Empresa -->
+    <div id="add-empresa-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nova Empresa</h3>
+                <button class="modal-close" onclick="closeAddEmpresaModal()">&times;</button>
+            </div>
+            <form id="add-empresa-form">
+                <div class="form-group">
+                    <label class="form-label">Nome da Empresa</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CNPJ</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Plano</label>
+                    <select class="form-input" required>
+                        <option value="">Selecione um plano</option>
+                        <option value="basico">Básico - R$ 15/mês</option>
+                        <option value="profissional">Profissional - R$ 35/mês</option>
+                        <option value="empresarial">Empresarial - R$ 65/mês</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddEmpresaModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Criar Empresa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // Your web app's Firebase configuration
+        // Configuração Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyAuGRbcAkCTRJFQ_3_g8VvX2kuLdSFEQg",
-          authDomain: "pontofacil-f4766.firebaseapp.com",
-          projectId: "pontofacil-f4766",
-          storageBucket: "pontofacil-f4766.appspot.com",
-          messagingSenderId: "160973674012",
-          appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
-          measurementId: "G-Z5NGQVXY2V"
+            apiKey: "AIzaSyAUgRbcAkCTRjF4q_3_g8vVx2kuLdSfEQg",
+            authDomain: "pontofacil-f4766.firebaseapp.com",
+            projectId: "pontofacil-f4766",
+            storageBucket: "pontofacil-f4766.firebasestorage.app",
+            messagingSenderId: "160973674012",
+            appId: "1:160973674012:web:a17b47d08a7bbf9b65b1d9",
+            measurementId: "G-Z5NGQVXY2V"
         };
 
-        // Initialize Firebase
+        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
-
         const auth = firebase.auth();
-        const logoutButton = document.getElementById('logout-button');
+        const db = firebase.firestore();
 
-        // Check authentication state on page load
-        auth.onAuthStateChanged((user) => {
-            const hostname = window.location.hostname;
-            if (!user) {
-                // User is not signed in, redirect to login page
-                if (hostname.includes('admin')) {
-                    window.location.href = '/'; // Redireciona para a raiz do domínio principal
-                } else {
-                    window.location.href = '/';
+        // Dados de exemplo (em produção, virão do Firebase)
+        const mockData = {
+            empresas: [
+                {
+                    id: 1,
+                    nome: "Tech Solutions Ltda",
+                    cnpj: "12.345.678/0001-90",
+                    plano: "Profissional",
+                    funcionarios: 25,
+                    status: "active",
+                    ultimoPagamento: "2025-09-15",
+                    valor: 875
+                },
+                {
+                    id: 2,
+                    nome: "Inovação Digital",
+                    cnpj: "98.765.432/0001-10",
+                    plano: "Empresarial",
+                    funcionarios: 50,
+                    status: "active",
+                    ultimoPagamento: "2025-09-10",
+                    valor: 3250
+                },
+                {
+                    id: 3,
+                    nome: "StartUp Criativa",
+                    cnpj: "11.222.333/0001-44",
+                    plano: "Básico",
+                    funcionarios: 8,
+                    status: "pending",
+                    ultimoPagamento: "2025-08-15",
+                    valor: 120
                 }
-            } else {
-                // User is signed in, ensure they are on the correct page for the subdomain
-                if (!hostname.includes('admin')) {
-                    // If logged in but not on admin subdomain, redirect to admin page
-                    window.location.href = 'http://admin.pontofacil.app.br';
+            ],
+            pagamentos: [
+                {
+                    id: 1,
+                    empresa: "Tech Solutions Ltda",
+                    valor: 875,
+                    vencimento: "2025-10-15",
+                    status: "paid",
+                    metodo: "Cartão"
+                },
+                {
+                    id: 2,
+                    empresa: "Inovação Digital",
+                    valor: 3250,
+                    vencimento: "2025-10-10",
+                    status: "paid",
+                    metodo: "PIX"
+                },
+                {
+                    id: 3,
+                    empresa: "StartUp Criativa",
+                    valor: 120,
+                    vencimento: "2025-09-15",
+                    status: "overdue",
+                    metodo: "Boleto"
                 }
+            ]
+        };
+
+        // Navegação
+        function showSection(sectionName) {
+            // Esconder todas as seções
+            document.querySelectorAll('.content-section-wrapper').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Mostrar seção selecionada
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+
+            // Atualizar navegação ativa
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+            // Carregar dados da seção
+            loadSectionData(sectionName);
+        }
+
+        // Carregar dados da seção
+        function loadSectionData(sectionName) {
+            switch(sectionName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'empresas':
+                    loadEmpresasData();
+                    break;
+                case 'financeiro':
+                    loadFinanceiroData();
+                    break;
             }
+        }
+
+        // Carregar dados do dashboard
+        function loadDashboardData() {
+            // Atualizar estatísticas
+            document.getElementById('total-empresas').textContent = mockData.empresas.length;
+            
+            const receitaTotal = mockData.empresas.reduce((total, empresa) => total + empresa.valor, 0);
+            document.getElementById('receita-mensal').textContent = `R$ ${receitaTotal.toLocaleString('pt-BR')}`;
+            
+            const pendentes = mockData.empresas.filter(e => e.status === 'pending').length;
+            document.getElementById('pagamentos-pendentes').textContent = pendentes;
+            
+            const usuariosAtivos = mockData.empresas.reduce((total, empresa) => total + empresa.funcionarios, 0);
+            document.getElementById('usuarios-ativos').textContent = usuariosAtivos;
+
+            // Carregar atividade recente
+            loadRecentActivity();
+        }
+
+        // Carregar atividade recente
+        function loadRecentActivity() {
+            const activities = [
+                { icon: 'fas fa-building', text: 'Nova empresa "Tech Solutions" cadastrada', time: '2 horas atrás' },
+                { icon: 'fas fa-dollar-sign', text: 'Pagamento recebido de "Inovação Digital"', time: '4 horas atrás' },
+                { icon: 'fas fa-user-plus', text: '15 novos funcionários adicionados', time: '1 dia atrás' },
+                { icon: 'fas fa-chart-line', text: 'Relatório mensal gerado', time: '2 dias atrás' }
+            ];
+
+            const activityHtml = activities.map(activity => `
+                <div style="display: flex; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                    <div style="width: 40px; height: 40px; background: var(--bg-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="${activity.icon}" style="color: var(--primary-color);"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="margin: 0; font-weight: 500;">${activity.text}</p>
+                        <p style="margin: 0; font-size: 0.875rem; color: var(--text-light);">${activity.time}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('recent-activity').innerHTML = activityHtml;
+        }
+
+        // Carregar dados das empresas
+        function loadEmpresasData() {
+            const tbody = document.getElementById('empresas-table');
+            
+            const empresasHtml = mockData.empresas.map(empresa => `
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600;">${empresa.nome}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">${empresa.cnpj}</div>
+                        </div>
+                    </td>
+                    <td>${empresa.plano}</td>
+                    <td>${empresa.funcionarios}</td>
+                    <td>
+                        <span class="status-badge ${empresa.status}">
+                            ${empresa.status === 'active' ? 'Ativo' : empresa.status === 'pending' ? 'Pendente' : 'Inativo'}
+                        </span>
+                    </td>
+                    <td>${new Date(empresa.ultimoPagamento).toLocaleDateString('pt-BR')}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editEmpresa(${empresa.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="viewEmpresa(${empresa.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = empresasHtml;
+        }
+
+        // Carregar dados financeiros
+        function loadFinanceiroData() {
+            const tbody = document.getElementById('pagamentos-table');
+            
+            const pagamentosHtml = mockData.pagamentos.map(pagamento => `
+                <tr>
+                    <td>${pagamento.empresa}</td>
+                    <td>R$ ${pagamento.valor.toLocaleString('pt-BR')}</td>
+                    <td>${new Date(pagamento.vencimento).toLocaleDateString('pt-BR')}</td>
+                    <td>
+                        <span class="status-badge ${pagamento.status}">
+                            ${pagamento.status === 'paid' ? 'Pago' : pagamento.status === 'pending' ? 'Pendente' : 'Em Atraso'}
+                        </span>
+                    </td>
+                    <td>${pagamento.metodo}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${pagamento.status !== 'paid' ? `
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = pagamentosHtml;
+        }
+
+        // Modal functions
+        function openAddEmpresaModal() {
+            document.getElementById('add-empresa-modal').classList.add('active');
+        }
+
+        function closeAddEmpresaModal() {
+            document.getElementById('add-empresa-modal').classList.remove('active');
+        }
+
+        // Utility functions
+        function refreshDashboard() {
+            loadDashboardData();
+        }
+
+        function editEmpresa(id) {
+            alert(`Editar empresa ${id}`);
+        }
+
+        function viewEmpresa(id) {
+            alert(`Ver empresa ${id}`);
+        }
+
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                auth.signOut().then(() => {
+                    window.location.href = '/';
+                });
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navegação
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    if (section) {
+                        showSection(section);
+                    }
+                });
+            });
+
+            // Busca de empresas
+            document.getElementById('search-empresas')?.addEventListener('input', function(e) {
+                // Implementar busca
+                console.log('Buscar:', e.target.value);
+            });
+
+            // Form de nova empresa
+            document.getElementById('add-empresa-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Implementar criação de empresa
+                alert('Empresa criada com sucesso!');
+                closeAddEmpresaModal();
+            });
+
+            // Carregar dashboard inicial
+            loadDashboardData();
         });
 
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => {
-                // Sign-out successful.
+        // Verificar autenticação
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
                 window.location.href = '/';
-            }).catch((error) => {
-                // An error happened.
-                console.error('Erro ao fazer logout:', error);
-                alert('Erro ao fazer logout. Tente novamente.');
-            });
+            }
         });
     </script>
 </body>
 </html>
-
